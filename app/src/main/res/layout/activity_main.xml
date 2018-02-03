@@ -5,21 +5,18 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.zhangwenl1993163.chargehelper.view.MainActivity">
+    tools:context="com.zhangwenl1993163.chargehelper.view.activity.MainActivity">
 
     <LinearLayout
+        android:id="@+id/panel_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <TextView
-            android:id="@+id/message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:text="@string/title_change"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="com.zhangwenl1993163.chargehelper.view.fragment.ChargeFragment"/>
     </LinearLayout>
 
     <android.support.design.widget.BottomNavigationView
