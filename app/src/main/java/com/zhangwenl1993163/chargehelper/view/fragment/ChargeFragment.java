@@ -8,6 +8,9 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -16,12 +19,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhangwenl1993163.chargehelper.R;
+import com.zhangwenl1993163.chargehelper.dao.ChargeDao;
 import com.zhangwenl1993163.chargehelper.dao.ProductDao;
+import com.zhangwenl1993163.chargehelper.model.Product;
 import com.zhangwenl1993163.chargehelper.model.Record;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by zhang on 2018/2/3.
@@ -30,11 +40,14 @@ import java.util.Date;
 public class ChargeFragment extends Fragment implements View.OnClickListener {
     private Record record = new Record();
     private TextView todayTotalCount,todayTotalMoney,modelPrice,addDateTv;
-    private EditText processNumber,qulifiedNumber;
+    private EditText processNumber,qulifiedNumber,comment;
     private Spinner modelName;
     private Button addButton;
     private Calendar calendar = Calendar.getInstance();
-    private ProductDao dao;
+    private ProductDao productDao;
+    private ChargeDao chargeDao;
+    private Map<String,Double> namePriceMap = new HashMap<>();
+    private List<String> names = new ArrayList<>();
 
     @Nullable
     @Override
@@ -54,10 +67,12 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void init(){
-        dao = new ProductDao(getView().getContext());
+        productDao = new ProductDao(getView().getContext());
+        chargeDao = new ChargeDao(getView().getContext());
         calendar.setTime(new Date());
         processNumber = getView().findViewById(R.id.add_record_process_num);
         modelName = getView().findViewById(R.id.add_record_model_name);
+        modelName.setOnItemSelectedListener(listener);
         modelPrice = getView().findViewById(R.id.add_record_model_price);
         qulifiedNumber = getView().findViewById(R.id.add_record_qulified_num);
         addButton = getView().findViewById(R.id.add_record_add_button);
@@ -65,13 +80,17 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
         addDateTv = getView().findViewById(R.id.add_record_add_date);
         addDateTv.setText(new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime()));
         addDateTv.setOnClickListener(this);
+        comment = getView().findViewById(R.id.add_record_comment);
+        todayTotalCount = getView().findViewById(R.id.today_charge_count);
+        todayTotalMoney = getView().findViewById(R.id.today_total_money);
+        loadStatistics();
+        loadModels();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.add_record_add_button:
-                showToast(dao.getAllProduct().toString());
                 insertRecord();
                 return;
 
@@ -82,6 +101,32 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
                 return;
         }
     }
+
+    private void loadStatistics(){
+        int count = chargeDao.getWorkedCount(new Date());
+        double money = chargeDao.getTotalMoney(new Date());
+        todayTotalCount.setText(count+"");
+        todayTotalMoney.setText(money+"");
+    }
+
+    /**
+     * 列表点击事件
+     * */
+    private AdapterView.OnItemSelectedListener listener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            String name = names.get(position);
+            double price = namePriceMap.get(name);
+            modelPrice.setText(price+" 元");
+            record.setModelName(name);
+            record.setModelPrice(price);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    };
 
     /**
      * 设置日期弹窗
@@ -96,6 +141,25 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
         },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
         dialog.show();
     }
+
+    /**
+     * 加载型号
+     * */
+    private void loadModels(){
+        //将所有产品保存成map，key为modelName ,value为model_price,便于联动
+        List<Product> products = productDao.getAllProduct();
+        for (Product product : products){
+            names.add(product.getModelName());
+            namePriceMap.put(product.getModelName(),product.getModelPrice());
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getView().getContext(),android.R.layout.simple_list_item_1,names);
+        modelName.setAdapter(adapter);
+        double firstPrice = namePriceMap.get(names.get(0));
+        modelPrice.setText(firstPrice+" 元");
+        record.setModelName(names.get(0));
+        record.setModelPrice(firstPrice);
+    }
+
     /**
      * 添加到数据库
      * */
@@ -114,20 +178,20 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
             showToast("请输入合格产品个数");
             return;
         }
-        s = modelName.getSelectedItem().toString();
+        s = record.getModelName();
         if (s != null && !"".equals(s)) {
-            record.setModelName(modelName.getSelectedItem().toString());
         }else {
             showToast("型号名称加载失败，请稍后再试");
             return;
         }
-        s = modelPrice.getText().toString();
-        if (s != null && !"".equals(s)) {
-            record.setModelPrice(Double.parseDouble(modelPrice.getText().toString()));
+        Double p = record.getModelPrice();
+        if (p != null && p != 0) {
         }else {
             showToast("型号单价加载失败，请稍后再试");
             return;
         }
+        s = comment.getText().toString();
+        record.setComment(s);
         record.setAddTime(calendar.getTime());
         record.setModifyTime(calendar.getTime());
 

@@ -14,7 +14,6 @@ import java.util.List;
  */
 
 public class ProductDao {
-    private final String TAG = ProductDao.class.getName();
     private Context context;
     private SQLiteDatabase db;
 
@@ -23,7 +22,7 @@ public class ProductDao {
     }
 
     public List<Product> getAllProduct(){
-        db = DBUtil.getDBWriteable(context);
+        db = DBUtil.getDBReadOnly(context);
         List<Product> products = new ArrayList<>();
         String sql = "select * from product_list";
         Cursor cursor = db.rawQuery(sql,null);
@@ -50,5 +49,26 @@ public class ProductDao {
         cursor.close();
         db.close();
         return products;
+    }
+
+    public void deleteProductById(Integer id){
+        db = DBUtil.getDBWriteable(context);
+        String sql = "delete from product_list where id = ?";
+        db.execSQL(sql,new Object[]{id});
+        db.close();
+    }
+
+    public void updateProduct(Product product){
+        db = DBUtil.getDBWriteable(context);
+        String sql = "update product_list set model_name = ? , model_price = ? , modify_time = ? where id = ?";
+        db.execSQL(sql,new Object[]{product.getModelName(),product.getModelPrice(),product.getModifyTime(),product.getId()});
+        db.close();
+    }
+
+    public void insertProduct(Product product){
+        db = DBUtil.getDBWriteable(context);
+        String sql = "insert product_list (model_name,model_price,add_time,modify_time) values (?,?,?,?)";
+        db.execSQL(sql,new Object[]{product.getModelName(),product.getModelPrice(),product.getAddTime(),product.getModifyTime()});
+        db.close();
     }
 }
