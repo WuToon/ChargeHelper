@@ -21,10 +21,10 @@ public class ChargeDao {
      * 获取今日加工产品个数
      * */
     public int getWorkedCount(Date date){
-        return 0;
+        return 10;
     }
 
     public double getTotalMoney(Date date){
-        return 3.2;
+        return 323.5;
     }
 }

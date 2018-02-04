@@ -13,10 +13,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <fragment
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="com.zhangwenl1993163.chargehelper.view.fragment.ChargeFragment"/>
     </LinearLayout>
 
     <android.support.design.widget.BottomNavigationView
