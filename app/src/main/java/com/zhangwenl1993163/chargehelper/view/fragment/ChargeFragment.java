@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhangwenl1993163.chargehelper.R;
+import com.zhangwenl1993163.chargehelper.dao.ProductDao;
 import com.zhangwenl1993163.chargehelper.model.Record;
 
 import java.text.SimpleDateFormat;
@@ -33,6 +34,7 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
     private Spinner modelName;
     private Button addButton;
     private Calendar calendar = Calendar.getInstance();
+    private ProductDao dao;
 
     @Nullable
     @Override
@@ -52,6 +54,7 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void init(){
+        dao = new ProductDao(getView().getContext());
         calendar.setTime(new Date());
         processNumber = getView().findViewById(R.id.add_record_process_num);
         modelName = getView().findViewById(R.id.add_record_model_name);
@@ -68,6 +71,7 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.add_record_add_button:
+                showToast(dao.getAllProduct().toString());
                 insertRecord();
                 return;
 
@@ -96,7 +100,6 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
      * 添加到数据库
      * */
     private void insertRecord(){
-        showToast(calendar.getTime().toString());
         String s = processNumber.getText().toString();
         if (s != null && !"".equals(s)){
             record.setProcessCardNumber(Integer.parseInt(s));

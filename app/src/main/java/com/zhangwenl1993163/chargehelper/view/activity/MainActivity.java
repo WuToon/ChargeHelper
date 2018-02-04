@@ -46,6 +46,5 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         panelContainer = findViewById(R.id.panel_container);
-//        chargePanel = LayoutInflater.from(this).inflate(R.layout.charge_panel,panelContainer,false);
     }
 }

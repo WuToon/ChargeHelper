@@ -8,7 +8,7 @@ import java.util.Date;
 public class Product {
     private Integer id;
     private String modelName;
-    private String modelPrice;
+    private Double modelPrice;
     private Date addTime;
     private Date modifyTime;
 
@@ -28,11 +28,11 @@ public class Product {
         this.modelName = modelName;
     }
 
-    public String getModelPrice() {
+    public Double getModelPrice() {
         return modelPrice;
     }
 
-    public void setModelPrice(String modelPrice) {
+    public void setModelPrice(Double modelPrice) {
         this.modelPrice = modelPrice;
     }
 
