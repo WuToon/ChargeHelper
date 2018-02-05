@@ -1,7 +1,5 @@
 package com.zhangwenl1993163.chargehelper.model;
 
-import java.util.Date;
-
 /**
  * Created by Administrator on 2018/2/3.
  */
@@ -9,8 +7,8 @@ public class Product {
     private Integer id;
     private String modelName;
     private Double modelPrice;
-    private Date addTime;
-    private Date modifyTime;
+    private Long addTimeStamp;
+    private Long modifyTimeStamp;
 
     public Integer getId() {
         return id;
@@ -36,20 +34,20 @@ public class Product {
         this.modelPrice = modelPrice;
     }
 
-    public Date getAddTime() {
-        return addTime;
+    public Long getAddTimeStamp() {
+        return addTimeStamp;
     }
 
-    public void setAddTime(Date addTime) {
-        this.addTime = addTime;
+    public void setAddTimeStamp(Long addTimeStamp) {
+        this.addTimeStamp = addTimeStamp;
     }
 
-    public Date getModifyTime() {
-        return modifyTime;
+    public Long getModifyTimeStamp() {
+        return modifyTimeStamp;
     }
 
-    public void setModifyTime(Date modifyTime) {
-        this.modifyTime = modifyTime;
+    public void setModifyTimeStamp(Long modifyTimeStamp) {
+        this.modifyTimeStamp = modifyTimeStamp;
     }
 
     @Override
@@ -57,9 +55,9 @@ public class Product {
         return "Product{" +
                 "id=" + id +
                 ", modelName='" + modelName + '\'' +
-                ", modelPrice='" + modelPrice + '\'' +
-                ", addTime=" + addTime +
-                ", modifyTime=" + modifyTime +
+                ", modelPrice=" + modelPrice +
+                ", addTimeStamp=" + addTimeStamp +
+                ", modifyTimeStamp=" + modifyTimeStamp +
                 '}';
     }
 }

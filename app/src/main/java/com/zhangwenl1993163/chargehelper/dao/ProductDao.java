@@ -3,9 +3,9 @@ package com.zhangwenl1993163.chargehelper.dao;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
 import com.zhangwenl1993163.chargehelper.model.Product;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,24 +31,28 @@ public class ProductDao {
             product.setId(cursor.getInt(0));
             product.setModelName(cursor.getString(1));
             product.setModelPrice(cursor.getDouble(2));
-            String addTimeStr = cursor.getString(3);
-            String modifyTimeStr = cursor.getString(4);
-            SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            try {
-                product.setAddTime(format.parse(addTimeStr));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            try {
-                product.setModifyTime(format.parse(modifyTimeStr));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            product.setAddTimeStamp(cursor.getLong(3));
+            Log.d("===========0===========",cursor.getLong(3)+"");
+            product.setModifyTimeStamp(cursor.getLong(4));
             products.add(product);
         }
         cursor.close();
         db.close();
         return products;
+    }
+
+    public Product getProductById(int id){
+        db = DBUtil.getDBReadOnly(context);
+        String sql = "select * from product_list where id = ?";
+        Cursor cursor = db.rawQuery(sql,new String[]{id+""});
+        cursor.moveToNext();
+        Product product = new Product();
+        product.setId(cursor.getInt(0));
+        product.setModelName(cursor.getString(1));
+        product.setModelPrice(cursor.getDouble(2));
+        product.setAddTimeStamp(cursor.getLong(3));
+        product.setModifyTimeStamp(cursor.getLong(4));
+        return product;
     }
 
     public void deleteProductById(Integer id){
@@ -61,14 +65,14 @@ public class ProductDao {
     public void updateProduct(Product product){
         db = DBUtil.getDBWriteable(context);
         String sql = "update product_list set model_name = ? , model_price = ? , modify_time = ? where id = ?";
-        db.execSQL(sql,new Object[]{product.getModelName(),product.getModelPrice(),product.getModifyTime(),product.getId()});
+        db.execSQL(sql,new Object[]{product.getModelName(),product.getModelPrice(),product.getModifyTimeStamp(),product.getId()});
         db.close();
     }
 
     public void insertProduct(Product product){
         db = DBUtil.getDBWriteable(context);
-        String sql = "insert product_list (model_name,model_price,add_time,modify_time) values (?,?,?,?)";
-        db.execSQL(sql,new Object[]{product.getModelName(),product.getModelPrice(),product.getAddTime(),product.getModifyTime()});
+        String sql = "insert into product_list (model_name,model_price,add_time,modify_time) values (?,?,?,?)";
+        db.execSQL(sql,new Object[]{product.getModelName(),product.getModelPrice(),product.getAddTimeStamp(),product.getModifyTimeStamp()});
         db.close();
     }
 }

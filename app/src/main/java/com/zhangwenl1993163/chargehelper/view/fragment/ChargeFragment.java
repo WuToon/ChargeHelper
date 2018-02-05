@@ -1,14 +1,12 @@
 package com.zhangwenl1993163.chargehelper.view.fragment;
 
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -17,13 +15,11 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.zhangwenl1993163.chargehelper.R;
 import com.zhangwenl1993163.chargehelper.dao.ChargeDao;
 import com.zhangwenl1993163.chargehelper.dao.ProductDao;
 import com.zhangwenl1993163.chargehelper.model.Product;
 import com.zhangwenl1993163.chargehelper.model.Record;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,7 +27,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by zhang on 2018/2/3.
@@ -192,8 +187,8 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
         }
         s = comment.getText().toString();
         record.setComment(s);
-        record.setAddTime(calendar.getTime());
-        record.setModifyTime(calendar.getTime());
+        record.setAddTimeStamp(calendar.getTimeInMillis());
+        record.setModifyTimeStamp(calendar.getTimeInMillis());
 
         //调用数据库
         showToast(record.toString());

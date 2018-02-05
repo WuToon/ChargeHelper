@@ -11,8 +11,8 @@ public class Record {
     private String modelName;
     private Double modelPrice;
     private Integer qulifiedNumber;
-    private Date addTime;
-    private Date modifyTime;
+    private Long addTimeStamp;
+    private Long modifyTimeStamp;
     private String comment;
 
     public Integer getId() {
@@ -55,20 +55,20 @@ public class Record {
         this.qulifiedNumber = qulifiedNumber;
     }
 
-    public Date getAddTime() {
-        return addTime;
+    public Long getAddTimeStamp() {
+        return addTimeStamp;
     }
 
-    public void setAddTime(Date addTime) {
-        this.addTime = addTime;
+    public void setAddTimeStamp(Long addTimeStamp) {
+        this.addTimeStamp = addTimeStamp;
     }
 
-    public Date getModifyTime() {
-        return modifyTime;
+    public Long getModifyTimeStamp() {
+        return modifyTimeStamp;
     }
 
-    public void setModifyTime(Date modifyTime) {
-        this.modifyTime = modifyTime;
+    public void setModifyTimeStamp(Long modifyTimeStamp) {
+        this.modifyTimeStamp = modifyTimeStamp;
     }
 
     public String getComment() {
@@ -87,8 +87,8 @@ public class Record {
                 ", modelName='" + modelName + '\'' +
                 ", modelPrice=" + modelPrice +
                 ", qulifiedNumber=" + qulifiedNumber +
-                ", addTime=" + addTime +
-                ", modifyTime=" + modifyTime +
+                ", addTimeStamp=" + addTimeStamp +
+                ", modifyTimeStamp=" + modifyTimeStamp +
                 ", comment='" + comment + '\'' +
                 '}';
     }
