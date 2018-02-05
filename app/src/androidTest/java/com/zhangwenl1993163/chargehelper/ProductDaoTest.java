@@ -5,7 +5,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
-import com.zhangwenl1993163.chargehelper.dao.DBUtil;
+import com.zhangwenl1993163.chargehelper.util.DBUtil;
 import com.zhangwenl1993163.chargehelper.dao.ProductDao;
 import com.zhangwenl1993163.chargehelper.model.Product;
 

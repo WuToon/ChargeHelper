@@ -1,6 +1,6 @@
 package com.zhangwenl1993163.chargehelper;
 
-import com.zhangwenl1993163.chargehelper.dao.DBUtil;
+import com.zhangwenl1993163.chargehelper.util.DBUtil;
 
 /**
  * Created by zhang on 2018/2/4.

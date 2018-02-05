@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.zhangwenl1993163.chargehelper.model.Product;
+import com.zhangwenl1993163.chargehelper.util.DBUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +34,6 @@ public class ProductDao {
             product.setModelName(cursor.getString(1));
             product.setModelPrice(cursor.getDouble(2));
             product.setAddTimeStamp(cursor.getLong(3));
-            Log.d("===========0===========",cursor.getLong(3)+"");
             product.setModifyTimeStamp(cursor.getLong(4));
             products.add(product);
         }

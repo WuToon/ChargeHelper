@@ -1,4 +1,4 @@
-package com.zhangwenl1993163.chargehelper.dao;
+package com.zhangwenl1993163.chargehelper.util;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
