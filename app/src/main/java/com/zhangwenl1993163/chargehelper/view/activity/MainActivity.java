@@ -6,7 +6,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import com.zhangwenl1993163.chargehelper.R;
 import com.zhangwenl1993163.chargehelper.view.fragment.ChargeFragment;
@@ -14,6 +18,7 @@ import com.zhangwenl1993163.chargehelper.view.fragment.ChargeFragment;
 public class MainActivity extends AppCompatActivity {
     private Fragment charge;
     private FragmentTransaction transaction;
+    private View container;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -49,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private void init(){
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        container = findViewById(R.id.panel_container);
         //获取fragment
         charge = new ChargeFragment();
 

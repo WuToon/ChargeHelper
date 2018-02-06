@@ -20,6 +20,9 @@ import com.zhangwenl1993163.chargehelper.dao.ChargeDao;
 import com.zhangwenl1993163.chargehelper.dao.ProductDao;
 import com.zhangwenl1993163.chargehelper.model.Product;
 import com.zhangwenl1993163.chargehelper.model.Record;
+import com.zhangwenl1993163.chargehelper.util.DateUtil;
+
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,7 +37,7 @@ import java.util.Map;
 
 public class ChargeFragment extends Fragment implements View.OnClickListener {
     private Record record = new Record();
-    private TextView todayTotalCount,todayTotalMoney,modelPrice,addDateTv;
+    private TextView todayTotalCount,todayTotalMoney,monthTotalMoney,modelPrice,addDateTv;
     private EditText processNumber,qulifiedNumber,comment;
     private Spinner modelName;
     private Button addButton;
@@ -78,6 +81,7 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
         comment = getView().findViewById(R.id.add_record_comment);
         todayTotalCount = getView().findViewById(R.id.today_charge_count);
         todayTotalMoney = getView().findViewById(R.id.today_total_money);
+        monthTotalMoney = getView().findViewById(R.id.month_total_money);
         loadStatistics();
         loadModels();
     }
@@ -97,11 +101,18 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /**
+     * 加载统计信息
+     * */
     private void loadStatistics(){
-        int count = chargeDao.getWorkedCount(new Date());
-        double money = chargeDao.getTotalMoney(new Date());
+        List<Long> day = DateUtil.getDayRange(new Date().getTime());
+        List<Long> month = DateUtil.getMonthRange(new Date().getTime());
+        int count = chargeDao.getWorkedCount(day);
+        BigDecimal money = chargeDao.getTotalMoney(day);
+        BigDecimal monthMoney = chargeDao.getTotalMoney(month);
         todayTotalCount.setText(count+"");
-        todayTotalMoney.setText(money+"");
+        todayTotalMoney.setText(money.setScale(2,BigDecimal.ROUND_HALF_UP)+"");
+        monthTotalMoney.setText(monthMoney.setScale(2,BigDecimal.ROUND_HALF_UP)+"");
     }
 
     /**
@@ -134,6 +145,7 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
                 addDateTv.setText(new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime()));
             }
         },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
+        dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         dialog.show();
     }
 
@@ -189,9 +201,16 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
         record.setComment(s);
         record.setAddTimeStamp(calendar.getTimeInMillis());
         record.setModifyTimeStamp(calendar.getTimeInMillis());
-
-        //调用数据库
-        showToast(record.toString());
+        //添加数据库
+        chargeDao.insertRecord(record);
+        loadStatistics();
+        //==========将输入框清空==========
+        processNumber.setText("");
+        qulifiedNumber.setText("");
+        calendar.setTime(new Date());
+        addDateTv.setText(new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime()));
+        //===============================
+        showToast("添加成功");
     }
 
     private void showToast(String msg){

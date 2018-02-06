@@ -1,8 +1,5 @@
 package com.zhangwenl1993163.chargehelper.util;
 
-import android.util.Log;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -27,7 +24,8 @@ public class DateUtil {
         now.setTime(new Date(timestamp));
         //当天开始的时间戳
         Calendar start = Calendar.getInstance();
-        start.set(now.get(Calendar.YEAR),now.get(Calendar.MONTH),now.get(Calendar.DAY_OF_MONTH),0,0,0);
+        start.set(now.get(Calendar.YEAR),now.get(Calendar.MONTH),
+                now.get(Calendar.DAY_OF_MONTH),0,0,0);
         Long startTimeStamp = start.getTimeInMillis();
         //当天结束的时间戳
         Long endTimeStamp = startTimeStamp + MILLISECONDS_OF_DAY;
@@ -47,11 +45,13 @@ public class DateUtil {
         Calendar now = Calendar.getInstance();
         now.setTime(new Date(timestamp));
         Calendar start = Calendar.getInstance();
-        start.set(now.get(Calendar.YEAR),now.get(Calendar.MONTH),1,0,0,0);
+        start.set(now.get(Calendar.YEAR),now.get(Calendar.MONTH),
+                1,0,0,0);
         Long startTimeStamp = start.getTimeInMillis();
         Calendar end = Calendar.getInstance();
         end.set(now.get(Calendar.MONTH) == 12 ? now.get(Calendar.YEAR) + 1 : now.get(Calendar.YEAR),
-                now.get(Calendar.MONTH) == 12 ? 1 : (now.get(Calendar.MONTH) + 1),1,0,0,0);
+                now.get(Calendar.MONTH) == 12 ? 1 : (now.get(Calendar.MONTH) + 1),
+                1,0,0,0);
         Long endTimeStamp = end.getTimeInMillis();
         longs.add(startTimeStamp);
         longs.add(endTimeStamp);

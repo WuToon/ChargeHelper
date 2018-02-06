@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"
-            android:text="今日数据"
+            android:text="统计数据"
             android:textSize="25dp"
             android:textStyle="bold"/>
         <LinearLayout
@@ -28,7 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
-                android:text="加工个数："
+                android:text="今日个数："
                 android:textSize="16dp"/>
             <TextView
                 android:id="@+id/today_charge_count"
@@ -50,10 +50,32 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
-                android:text="总计金额："
+                android:text="今日金额："
                 android:textSize="16dp"/>
             <TextView
                 android:id="@+id/today_total_money"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="元"
+                android:textSize="16dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:text="本月收入："
+                android:textSize="16dp"/>
+            <TextView
+                android:id="@+id/month_total_money"
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"/>
@@ -205,7 +227,6 @@
             android:layout_gravity="right"
             android:layout_marginRight="10dp"
             android:text="添加"/>
-
     </LinearLayout>
     <!--记账区域end-->
 </LinearLayout>
