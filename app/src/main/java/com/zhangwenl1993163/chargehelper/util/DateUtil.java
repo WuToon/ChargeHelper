@@ -57,4 +57,18 @@ public class DateUtil {
         longs.add(endTimeStamp);
         return longs;
     }
+
+    /**
+     * 获取最近三年的年份
+     * */
+    public static List<Integer> getLatest3Years(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        int now = calendar.get(Calendar.YEAR);
+        List<Integer> l = new ArrayList<>();
+        l.add(now - 2);
+        l.add(now - 1);
+        l.add(now);
+        return l;
+    }
 }

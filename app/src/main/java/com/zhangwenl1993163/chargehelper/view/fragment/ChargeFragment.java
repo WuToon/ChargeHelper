@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,6 +75,8 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
         modelPrice = getView().findViewById(R.id.add_record_model_price);
         qulifiedNumber = getView().findViewById(R.id.add_record_qulified_num);
         addButton = getView().findViewById(R.id.add_record_add_button);
+        //设置按钮背景色为主题颜色
+        addButton.setBackgroundColor(getColorPrimary());
         addButton.setOnClickListener(this);
         addDateTv = getView().findViewById(R.id.add_record_add_date);
         addDateTv.setText(new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime()));
@@ -211,6 +214,16 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
         addDateTv.setText(new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime()));
         //===============================
         showToast("添加成功");
+    }
+
+    /**
+     * 获取主题颜色
+     * @return
+     */
+    public int getColorPrimary(){
+        TypedValue typedValue = new  TypedValue();
+        getView().getContext().getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
+        return typedValue.data;
     }
 
     private void showToast(String msg){

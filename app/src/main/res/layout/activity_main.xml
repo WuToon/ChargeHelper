@@ -8,12 +8,22 @@
     tools:context="com.zhangwenl1993163.chargehelper.view.activity.MainActivity">
 
     <LinearLayout
-        android:id="@+id/panel_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
+        <LinearLayout
+            android:id="@+id/panel_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="1"></LinearLayout>
+        <View
+            android:id="@+id/under_navigation"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="0dp"
+            android:layout_height="100dp"/>
     </LinearLayout>
+
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="0dp"

@@ -3,4 +3,26 @@
     <string name="title_change">记账</string>
     <string name="title_history">历史</string>
     <string name="title_setting">设置</string>
+
+    <string-array name="months">
+        <item>1 月</item>
+        <item>2 月</item>
+        <item>3 月</item>
+        <item>4 月</item>
+        <item>5 月</item>
+        <item>6 月</item>
+        <item>7 月</item>
+        <item>8 月</item>
+        <item>9 月</item>
+        <item>10 月</item>
+        <item>11 月</item>
+        <item>12 月</item>
+    </string-array>
+
+    <string-array name="sort_item">
+        <item>流程卡号</item>
+        <item>产品型号</item>
+        <item>日期</item>
+    </string-array>
 </resources>
+
