@@ -7,6 +7,7 @@ import com.zhangwenl1993163.chargehelper.model.Record;
 import com.zhangwenl1993163.chargehelper.util.DBUtil;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,6 +45,27 @@ public class ChargeDao {
         BigDecimal i = new BigDecimal(cursor.getDouble(0));
         db.close();
         return i;
+    }
+
+    public List<Record> getRecordInRange(List<Long> range,String sortItem){
+        db = DBUtil.getDBReadOnly(context);
+        List<Record> l = new ArrayList<>();
+        String sql = "select * from charge_list where add_time >= ? and add_time < ? order by ?";
+        Cursor cursor = db.rawQuery(sql,new String[]{range.get(0)+"",range.get(1)+"",sortItem});
+        while (cursor.moveToNext()){
+            Record r = new Record();
+            r.setId(cursor.getInt(0));
+            r.setProcessCardNumber(cursor.getInt(1));
+            r.setModelName(cursor.getString(2));
+            r.setModelPrice(cursor.getDouble(3));
+            r.setQulifiedNumber(cursor.getInt(4));
+            r.setAddTimeStamp(cursor.getLong(5));
+            r.setModifyTimeStamp(cursor.getLong(6));
+            r.setComment(cursor.getString(7));
+            l.add(r);
+        }
+        db.close();
+        return l;
     }
 
     public void insertRecord(Record record){

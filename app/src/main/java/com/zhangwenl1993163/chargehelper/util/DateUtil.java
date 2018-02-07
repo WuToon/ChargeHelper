@@ -66,9 +66,9 @@ public class DateUtil {
         calendar.setTime(new Date());
         int now = calendar.get(Calendar.YEAR);
         List<Integer> l = new ArrayList<>();
-        l.add(now - 2);
-        l.add(now - 1);
         l.add(now);
+        l.add(now - 1);
+        l.add(now - 2);
         return l;
     }
 }
