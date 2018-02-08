@@ -10,12 +10,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.zhangwenl1993163.chargehelper.R;
 import com.zhangwenl1993163.chargehelper.view.fragment.ChargeFragment;
 import com.zhangwenl1993163.chargehelper.view.fragment.HistoryFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private Fragment charge,history;
     private FragmentTransaction transaction;
     private View under;
@@ -25,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            InputMethodManager manager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+            manager.hideSoftInputFromWindow(under.getWindowToken(),0);
             switch (item.getItemId()) {
                 case R.id.navigation_charge:
                     transaction = getFragmentManager().beginTransaction();
@@ -36,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_setting:
                     transaction = getFragmentManager().beginTransaction();
-                    transaction.hide(charge).commit();
+                    transaction.hide(charge).hide(history).commit();
                     return true;
             }
             return false;
@@ -51,7 +55,20 @@ public class MainActivity extends AppCompatActivity {
         init();
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.container:
+                InputMethodManager manager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+                manager.hideSoftInputFromWindow(v.getWindowToken(),0);
+                break;
+            default:
+                break;
+        }
+    }
+
     private void init(){
+        findViewById(R.id.container).setOnClickListener(this);
         under = findViewById(R.id.under_navigation);
         final BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);

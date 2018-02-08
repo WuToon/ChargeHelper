@@ -30,4 +30,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'org.litepal.android:core:1.3.2'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+    compile 'com.yydcdut.sdlv:sdlv:0.7.0'
 }
