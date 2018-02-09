@@ -1,6 +1,12 @@
 package com.zhangwenl1993163.chargehelper.view.fragment;
 
+import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,12 +21,15 @@ import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.yydcdut.sdlv.Menu;
-import com.yydcdut.sdlv.MenuItem;
-import com.yydcdut.sdlv.SlideAndDragListView;
+
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.zhangwenl1993163.chargehelper.R;
 import com.zhangwenl1993163.chargehelper.dao.ChargeDao;
 import com.zhangwenl1993163.chargehelper.util.DateUtil;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,11 +46,13 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
     private Spinner queryYear,queryMonth,sortWay;
     private TextView tip;
     private Button queryBtn;
-    private SlideAndDragListView container;
+    private SwipeMenuListView container;
     private Calendar calendar = Calendar.getInstance();
     private List<Integer> years;
     private String sortColoumName = PROCESS_CARD_NUMBER;
     private ChargeDao chargeDao;
+    private List<Map<String,Object>> records;
+    private SimpleAdapter adapter;
 
     @Nullable
     @Override
@@ -91,11 +102,11 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
      * 加载产品列表
      * */
     private void loadProductList(){
-        List<Map<String,Object>> rs = query();
-        setTips(rs);
-        SimpleAdapter adapter = new SimpleAdapter(getView().getContext(),rs,R.layout.product_list_item,
-                new String[]{"id","processCardNumber","modelName","qulifiedNumber","totalMoney"},
-                new int[]{R.id.item_id,R.id.item_process_card_number,R.id.item_module_name,
+        records = query();
+        setTips(records);
+        adapter = new SimpleAdapter(getView().getContext(),records,R.layout.product_list_item,
+                new String[]{"processCardNumber","modelName","qulifiedNumber","totalMoney"},
+                new int[]{R.id.item_process_card_number,R.id.item_module_name,
                 R.id.item_qulified_number,R.id.item_total_money});
         container.setAdapter(adapter);
     }
@@ -137,38 +148,95 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
      * 设置滑动菜单
      * */
     private void setSlideMenu(){
-        Menu menu = new Menu(false, 0);
-        menu.addItem(new MenuItem.Builder().setText("隐藏")
-                .setBackground(new ColorDrawable(getResources().getColor(R.color.slideMenuHide)))
-                .setTextSize(13).setDirection(MenuItem.DIRECTION_RIGHT)
-                .setWidth(100).build());
-        menu.addItem(new MenuItem.Builder().setText("修改")
-                .setBackground(new ColorDrawable(getResources().getColor(R.color.slideMenuUpdate)))
-                .setTextSize(13).setDirection(MenuItem.DIRECTION_RIGHT)
-                .setWidth(100).build());
-        menu.addItem(new MenuItem.Builder().setText("删除")
-                .setBackground(new ColorDrawable(getResources().getColor(R.color.slideMenuDel)))
-                .setTextSize(13).setDirection(MenuItem.DIRECTION_RIGHT)
-                .setWidth(100).build());
-        container.setMenu(menu);
-        container.setOnMenuItemClickListener(new SlideAndDragListView.OnMenuItemClickListener() {
+        SwipeMenuCreator creator = new SwipeMenuCreator() {
             @Override
-            public int onMenuItemClick(View v, int itemPosition, int buttonPosition, int direction) {
-                switch (buttonPosition){
+            public void create(SwipeMenu menu) {
+                SwipeMenuItem del = new SwipeMenuItem(getView().getContext());
+                del.setWidth(120);
+                del.setBackground(new ColorDrawable(getResources().getColor(R.color.slideMenuDel)));
+                del.setTitle("删除");
+                del.setTitleColor(Color.BLACK);
+                del.setTitleSize(16);
+                menu.addMenuItem(del);
+
+                SwipeMenuItem update = new SwipeMenuItem(getView().getContext());
+                update.setWidth(120);
+                update.setBackground(new ColorDrawable(getResources().getColor(R.color.slideMenuUpdate)));
+                update.setTitle("修改");
+                update.setTitleColor(Color.BLACK);
+                update.setTitleSize(16);
+                menu.addMenuItem(update);
+
+                SwipeMenuItem hide = new SwipeMenuItem(getView().getContext());
+                hide.setWidth(120);
+                hide.setBackground(new ColorDrawable(getResources().getColor(R.color.slideMenuHide)));
+                hide.setTitle("隐藏");
+                hide.setTitleColor(Color.BLACK);
+                hide.setTitleSize(16);
+                menu.addMenuItem(hide);
+            }
+        };
+        container.setMenuCreator(creator);
+        container.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                switch (index){
                     case 0:
-                        showToast("删除: itemposition:"+itemPosition+" view:"+v.toString());
+                        delItem(position);
                         break;
                     case 1:
-                        showToast("修改: itemposition:"+itemPosition+" view:"+v.toString());
+                        updateItem(position);
                         break;
-                    case 2:
-                        showToast("隐藏: itemposition:"+itemPosition+" view:"+v.toString());
+                    case 2://隐藏条目
+                        hideItem(position);
                         break;
                     default:break;
                 }
-                return 0;
+                return false;
             }
         });
+    }
+
+    /**
+     * 隐藏条目
+     * */
+    private void hideItem(int position){
+        records.remove(position);
+        adapter.notifyDataSetChanged();
+        container.setAdapter(adapter);
+        setTips(records);
+    }
+
+    /**
+     * 删除条目
+     * */
+    private void delItem(final int position){
+        final int id = (Integer)(records.get(position).get("id"));
+        final int cardNum = (Integer)(records.get(position).get("processCardNumber"));
+        AlertDialog.Builder builder = new AlertDialog.Builder(getView().getContext());
+        builder.setTitle("是否删除");
+        builder.setMessage("即将删除流程卡号为"+ cardNum +"的记录，删除之后不可恢复，请谨慎操作！");
+        builder.setCancelable(true);
+        builder.setNegativeButton("取消",null);
+        builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                chargeDao.deleteRecordById(id);
+                hideItem(position);
+            }
+        });
+        builder.show();
+    }
+
+    /**
+     * 修改条目
+     * */
+    private void updateItem(int position){
+        Map<String,Object> m = records.get(position);
+        UpdateDialogFragment fragment = new UpdateDialogFragment();
+//        fragment.initDate(records.get(position),getView().getContext());
+        FragmentTransaction fm = getFragmentManager().beginTransaction();
+        fragment.show(fm,"dialog");
     }
 
     //监听器
