@@ -3,11 +3,8 @@ package com.zhangwenl1993163.chargehelper.dao;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-
 import com.zhangwenl1993163.chargehelper.model.Record;
 import com.zhangwenl1993163.chargehelper.util.DBUtil;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;

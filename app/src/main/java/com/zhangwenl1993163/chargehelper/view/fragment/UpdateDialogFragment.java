@@ -1,7 +1,10 @@
 package com.zhangwenl1993163.chargehelper.view.fragment;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -21,6 +24,7 @@ import com.zhangwenl1993163.chargehelper.dao.ProductDao;
 import com.zhangwenl1993163.chargehelper.model.Product;
 import com.zhangwenl1993163.chargehelper.model.Record;
 
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,37 +41,96 @@ public class UpdateDialogFragment extends DialogFragment {
     private EditText cardNumber,qulifiedNumber,comment;
     private Spinner modelName;
     private TextView modelPrice,addTime;
-    private ChargeDao chargeDao;
     private ProductDao productDao;
     private List<String> names = new ArrayList<>();
     private Map<String,Double> namePriceMap = new HashMap<>();
-    private Context mContext;
+    private View view;
+    private AlertDialog dialog;
+    private Map<String,Object> records;
+    private onRecordChanged onRecordChanged;
+
+    public void setOnRecordChanged(com.zhangwenl1993163.chargehelper.view.fragment.onRecordChanged onRecordChanged) {
+        this.onRecordChanged = onRecordChanged;
+    }
+
+    @SuppressLint({"NewApi", "ValidFragment"})
+    public UpdateDialogFragment(Map<String,Object> records) {
+        this.records = records;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.update_record_dialog,container,false);
+        if (view == null)
+            view = inflater.inflate(R.layout.update_record_dialog,container,false);
+        initUI();
+        return view;
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        if (view == null)
+            view = getActivity().getLayoutInflater().inflate(R.layout.update_record_dialog,null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("修改记录");
+        builder.setView(view);
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    Field field = dialog.getClass().getSuperclass().getDeclaredField("mShowing");
+                    field.setAccessible(true);
+                    field.set(dialog,true);
+                    dialog.dismiss();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        builder.setPositiveButton("提交", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    Field field = dialog.getClass().getSuperclass().getDeclaredField("mShowing");
+                    field.setAccessible(true);
+                    if (checkParams()){
+                        field.set(dialog,true);
+                        if (onRecordChanged != null)
+                            onRecordChanged.onChanged(record);
+                        dialog.dismiss();
+                        showToast("修改成功");
+                    }else
+                        field.set(dialog,false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        dialog = builder.create();
+        return dialog;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        initDate(records);
     }
 
     private void initUI(){
-        chargeDao = new ChargeDao(mContext);
-        productDao = new ProductDao(mContext);
-        Log.i("=============",productDao == null?"yes":"no");
-        cardNumber = getView().findViewById(R.id.update_item_card);
-        qulifiedNumber = getView().findViewById(R.id.update_item_qulified_num);
-        comment = getView().findViewById(R.id.update_item_comment);
-        modelName = getView().findViewById(R.id.update_item_model_name);
+        cardNumber = view.findViewById(R.id.update_item_card);
+        qulifiedNumber = view.findViewById(R.id.update_item_qulified_num);
+        comment = view.findViewById(R.id.update_item_comment);
+        modelName = view.findViewById(R.id.update_item_model_name);
         modelName.setOnItemSelectedListener(listener);
-        modelPrice = getView().findViewById(R.id.update_item_model_price);
-        addTime = getView().findViewById(R.id.update_item_add_date);
+        modelPrice = view.findViewById(R.id.update_item_model_price);
+        addTime = view.findViewById(R.id.update_item_add_date);
     }
 
     /**
      * 初始化数据
      * */
-    public void initDate(Map<String,Object> m,Context context){
-        this.mContext = context;
-        initUI();
+    public void initDate(Map<String,Object> m){
+        productDao = new ProductDao(getActivity());
         record = new Record();
         record.setId((Integer)m.get("id"));
         record.setProcessCardNumber((Integer)m.get("processCardNumber"));
@@ -85,43 +148,42 @@ public class UpdateDialogFragment extends DialogFragment {
         comment.setText(record.getComment());
     }
 
-    public void update(){
+    public boolean checkParams(){
         String s = cardNumber.getText().toString();
         if (s != null && !"".equals(s)){
             record.setProcessCardNumber(Integer.parseInt(s));
         }else {
             showToast("请输入流程卡号");
-            return;
+            return false;
         }
         s = qulifiedNumber.getText().toString();
         if (s != null && !"".equals(s)){
             record.setQulifiedNumber(Integer.parseInt(s));
         }else {
             showToast("请输入合格产品个数");
-            return;
+            return false;
         }
         s = record.getModelName();
         if (s != null && !"".equals(s)) {
         }else {
             showToast("型号名称加载失败，请稍后再试");
-            return;
+            return false;
         }
         Double p = record.getModelPrice();
         if (p != null && p != 0) {
         }else {
             showToast("型号单价加载失败，请稍后再试");
-            return;
+            return false;
         }
         s = comment.getText().toString();
         record.setComment(s);
         record.setModifyTimeStamp(System.currentTimeMillis());
 
-        showToastL(record.toString());
+        return true;
     }
 
     /**
      * 加载型号
-     * @param 默认选中型号
      * */
     private void loadModelNames(String defaultItemNmae){
         //将所有产品保存成map，key为modelName ,value为model_price,便于联动
@@ -130,7 +192,7 @@ public class UpdateDialogFragment extends DialogFragment {
             names.add(product.getModelName());
             namePriceMap.put(product.getModelName(),product.getModelPrice());
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getView().getContext(),android.R.layout.simple_list_item_1,names);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1,names);
         modelName.setAdapter(adapter);
         //设置默认型号
         modelName.setSelection(names.indexOf(defaultItemNmae));
@@ -159,9 +221,9 @@ public class UpdateDialogFragment extends DialogFragment {
     };
 
     private void showToast(String msg){
-        Toast.makeText(getView().getContext(),msg,Toast.LENGTH_SHORT).show();
+        Toast.makeText(view.getContext(),msg,Toast.LENGTH_SHORT).show();
     }
-    private void showToastL(String msg){
-        Toast.makeText(getView().getContext(),msg,Toast.LENGTH_LONG).show();
-    }
+}
+interface onRecordChanged{
+    void onChanged(Record record);
 }

@@ -133,6 +133,7 @@
                     android:id="@+id/add_record_process_num"
                     android:layout_width="180dp"
                     android:layout_height="wrap_content"
+                    android:maxLength="15"
                     android:hint="请输入流程卡号"
                     android:textSize="16dp"
                     android:inputType="numberSigned"/>
@@ -186,6 +187,7 @@
                     android:id="@+id/add_record_qulified_num"
                     android:layout_width="180dp"
                     android:layout_height="wrap_content"
+                    android:maxLength="3"
                     android:hint="请输入合格个数"
                     android:textSize="16dp"
                     android:inputType="numberSigned"/>
@@ -223,6 +225,7 @@
                     android:id="@+id/add_record_comment"
                     android:layout_width="180dp"
                     android:layout_height="wrap_content"
+                    android:maxLength="40"
                     android:hint="选填"
                     android:textSize="16dp"/>
             </LinearLayout>

@@ -1,9 +1,7 @@
 package com.zhangwenl1993163.chargehelper.view.fragment;
 
 import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -21,15 +19,15 @@ import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.zhangwenl1993163.chargehelper.R;
 import com.zhangwenl1993163.chargehelper.dao.ChargeDao;
+import com.zhangwenl1993163.chargehelper.model.Record;
 import com.zhangwenl1993163.chargehelper.util.DateUtil;
-
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -77,6 +75,12 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (!hidden)
+            loadProductList();
+    }
+
     private void init(){
         calendar.setTime(new Date());
         calendar.set(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),15);
@@ -94,9 +98,33 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
         queryBtn.setBackgroundColor(getColorPrimary());
         queryBtn.setOnClickListener(this);
         container = getView().findViewById(R.id.history_container);
+        container.setOnItemClickListener(listener);
         setSlideMenu();
         loadProductList();
     }
+
+    private AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Map<String,Object> record = records.get(position);
+            List<String> strs = new ArrayList<>();
+            strs.add("      流程卡号："+record.get("processCardNumber"));
+            strs.add("      产品型号："+record.get("modelName"));
+            strs.add("      型号单价："+record.get("modelPrice"));
+            strs.add("      合格个数："+record.get("qulifiedNumber"));
+            strs.add("      总计金额："+record.get("totalMoney"));
+            strs.add("      添加日期："+new SimpleDateFormat("yyyy-MM-dd  HH:mm").
+                    format(new Date((Long) record.get("addTime"))));
+            strs.add("      备         注："+record.get("comment"));
+            String[] sa = strs.toArray(new String[0]);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getView().getContext());
+            builder.setTitle("详情");
+            builder.setItems(sa,null);
+            builder.setPositiveButton("确定",null);
+            builder.show();
+        }
+    };
 
     /**
      * 加载产品列表
@@ -116,7 +144,7 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
      * */
     private void setTips(List<Map<String,Object>> l){
         if (l != null && l.size() != 0){
-            String s = "<-- 总计"+ l.size() +"条数据 -->";
+            String s = "<-- 总计"+ l.size() +"条数据，点击查看详情，左滑弹出菜单 -->";
             tip.setText(s);
         }else
             tip.setText("<-- 暂无数据，请更换查询条件 -->");
@@ -233,8 +261,14 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
      * */
     private void updateItem(int position){
         Map<String,Object> m = records.get(position);
-        UpdateDialogFragment fragment = new UpdateDialogFragment();
-//        fragment.initDate(records.get(position),getView().getContext());
+        UpdateDialogFragment fragment = new UpdateDialogFragment(records.get(position));
+        fragment.setOnRecordChanged(new onRecordChanged() {
+            @Override
+            public void onChanged(Record record) {
+                chargeDao.updateRecord(record);
+                loadProductList();
+            }
+        });
         FragmentTransaction fm = getFragmentManager().beginTransaction();
         fragment.show(fm,"dialog");
     }

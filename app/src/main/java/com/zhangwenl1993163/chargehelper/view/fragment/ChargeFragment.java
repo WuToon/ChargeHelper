@@ -22,7 +22,6 @@ import com.zhangwenl1993163.chargehelper.dao.ProductDao;
 import com.zhangwenl1993163.chargehelper.model.Product;
 import com.zhangwenl1993163.chargehelper.model.Record;
 import com.zhangwenl1993163.chargehelper.util.DateUtil;
-
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -102,6 +101,12 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
             default:
                 return;
         }
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (!hidden)
+            loadStatistics();
     }
 
     /**

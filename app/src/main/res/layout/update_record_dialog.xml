@@ -7,6 +7,8 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:orientation="horizontal">
         <TextView
             android:layout_width="wrap_content"
@@ -15,8 +17,9 @@
             android:text="流程卡号："/>
         <EditText
             android:id="@+id/update_item_card"
-            android:layout_width="120dp"
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
+            android:maxLength="15"
             android:hint="请输入流程卡号"
             android:textSize="16dp"
             android:inputType="numberSigned"/>
@@ -25,6 +28,8 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:orientation="horizontal">
         <TextView
             android:layout_width="wrap_content"
@@ -33,13 +38,15 @@
             android:text="产品型号："/>
         <Spinner
             android:id="@+id/update_item_model_name"
-            android:layout_width="wrap_content"
+            android:layout_width="160dp"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:orientation="horizontal">
         <TextView
             android:layout_width="wrap_content"
@@ -48,13 +55,15 @@
             android:text="型号单价："/>
         <TextView
             android:id="@+id/update_item_model_price"
-            android:layout_width="120dp"
+            android:layout_width="160dp"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:orientation="horizontal">
         <TextView
             android:layout_width="wrap_content"
@@ -63,8 +72,9 @@
             android:text="合格个数："/>
         <EditText
             android:id="@+id/update_item_qulified_num"
-            android:layout_width="120dp"
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
+            android:maxLength="3"
             android:hint="请输入合格个数"
             android:textSize="16dp"
             android:inputType="numberSigned"/>
@@ -73,6 +83,8 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:orientation="horizontal">
         <TextView
             android:layout_width="wrap_content"
@@ -81,13 +93,15 @@
             android:text="添加日期："/>
         <TextView
             android:id="@+id/update_item_add_date"
-            android:layout_width="120dp"
+            android:layout_width="160dp"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:orientation="horizontal">
         <TextView
             android:layout_width="wrap_content"
@@ -96,8 +110,9 @@
             android:text="备         注："/>
         <EditText
             android:id="@+id/update_item_comment"
-            android:layout_width="120dp"
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
+            android:maxLength="40"
             android:textSize="16dp"
             android:hint="选填"/>
     </LinearLayout>
