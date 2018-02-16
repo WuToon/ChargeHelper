@@ -217,6 +217,7 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
         qulifiedNumber.setText("");
         calendar.setTime(new Date());
         addDateTv.setText(new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime()));
+        comment.setText("");
         //===============================
         showToast("添加成功");
     }
