@@ -105,8 +105,10 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onHiddenChanged(boolean hidden) {
-        if (!hidden)
+        if (!hidden) {
             loadStatistics();
+            loadModels();
+        }
     }
 
     /**
@@ -161,6 +163,9 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
      * 加载型号
      * */
     private void loadModels(){
+        //清空
+        names.clear();
+        namePriceMap.clear();
         //将所有产品保存成map，key为modelName ,value为model_price,便于联动
         List<Product> products = productDao.getAllProduct();
         for (Product product : products){

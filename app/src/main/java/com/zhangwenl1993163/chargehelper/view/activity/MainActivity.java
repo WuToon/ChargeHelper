@@ -16,9 +16,10 @@ import android.widget.Toast;
 import com.zhangwenl1993163.chargehelper.R;
 import com.zhangwenl1993163.chargehelper.view.fragment.ChargeFragment;
 import com.zhangwenl1993163.chargehelper.view.fragment.HistoryFragment;
+import com.zhangwenl1993163.chargehelper.view.fragment.SettingFragment;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-    private Fragment charge,history;
+    private Fragment charge,history,setting;
     private FragmentTransaction transaction;
     private View under;
 
@@ -32,15 +33,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             switch (item.getItemId()) {
                 case R.id.navigation_charge:
                     transaction = getFragmentManager().beginTransaction();
-                    transaction.show(charge).hide(history).commit();
+                    transaction.show(charge).hide(history).hide(setting).commit();
                     return true;
                 case R.id.navigation_history:
                     transaction = getFragmentManager().beginTransaction();
-                    transaction.show(history).hide(charge).commit();
+                    transaction.show(history).hide(charge).hide(setting).commit();
                     return true;
                 case R.id.navigation_setting:
                     transaction = getFragmentManager().beginTransaction();
-                    transaction.hide(charge).hide(history).commit();
+                    transaction.show(setting).hide(charge).hide(history).commit();
                     return true;
             }
             return false;
@@ -87,11 +88,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //获取fragment
         charge = new ChargeFragment();
         history = new HistoryFragment();
+        setting = new SettingFragment();
 
         transaction = getFragmentManager().beginTransaction();
         transaction.add(R.id.panel_container,charge);
         transaction.add(R.id.panel_container,history);
+        transaction.add(R.id.panel_container,setting);
         transaction.hide(history);
+        transaction.hide(setting);
         transaction.commit();
     }
 }

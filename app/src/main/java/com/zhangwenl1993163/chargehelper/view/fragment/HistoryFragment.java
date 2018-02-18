@@ -132,7 +132,7 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
     private void loadProductList(){
         records = query();
         setTips(records);
-        adapter = new SimpleAdapter(getView().getContext(),records,R.layout.product_list_item,
+        adapter = new SimpleAdapter(getView().getContext(),records,R.layout.record_list_item,
                 new String[]{"processCardNumber","modelName","qulifiedNumber","totalMoney"},
                 new int[]{R.id.item_process_card_number,R.id.item_module_name,
                 R.id.item_qulified_number,R.id.item_total_money});
