@@ -1,6 +1,6 @@
 package com.zhangwenl1993163.chargehelper;
 
-import android.util.TypedValue;
+import android.content.Context;
 
 import com.zhangwenl1993163.chargehelper.util.DBUtil;
 
@@ -9,9 +9,15 @@ import com.zhangwenl1993163.chargehelper.util.DBUtil;
  */
 
 public class Application extends android.app.Application {
+    private static Context context;
     @Override
     public void onCreate() {
         super.onCreate();
+        context = getApplicationContext();
         DBUtil.init(this);
+    }
+
+    public static Context getContext(){
+        return context;
     }
 }

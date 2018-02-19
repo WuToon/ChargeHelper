@@ -48,11 +48,11 @@ public class ChargeDao {
         return i;
     }
 
-    public List<Record> getRecordInRange(List<Long> range,String sortItem){
+    public List<Record> getAllRecord(){
         db = DBUtil.getDBReadOnly(context);
         List<Record> l = new ArrayList<>();
-        String sql = "select * from charge_list where add_time >= ? and add_time < ? order by "+sortItem+" asc";
-        Cursor cursor = db.rawQuery(sql,new String[]{range.get(0)+"",range.get(1)+""});
+        String sql = "select * from charge_list";
+        Cursor cursor = db.rawQuery(sql,new String[]{});
         while (cursor.moveToNext()){
             Record r = new Record();
             r.setId(cursor.getInt(0));

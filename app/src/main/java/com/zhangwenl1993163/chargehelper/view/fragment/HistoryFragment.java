@@ -18,7 +18,6 @@ import android.widget.Button;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
@@ -332,9 +331,5 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
         TypedValue typedValue = new  TypedValue();
         getView().getContext().getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
         return typedValue.data;
-    }
-
-    private void showToast(String msg){
-        Toast.makeText(getView().getContext(),msg,Toast.LENGTH_SHORT).show();
     }
 }

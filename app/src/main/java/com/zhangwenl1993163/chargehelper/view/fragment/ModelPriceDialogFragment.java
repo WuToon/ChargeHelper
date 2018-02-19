@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.zhangwenl1993163.chargehelper.R;
 import com.zhangwenl1993163.chargehelper.dao.ProductDao;
 import com.zhangwenl1993163.chargehelper.model.Product;
+import com.zhangwenl1993163.chargehelper.util.CommonUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -144,7 +145,7 @@ public class ModelPriceDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (ModelPriceET.getText().toString() == null || ModelPriceET.getText().toString().equals("")){
-                    showMsg("价格不可以为空");
+                    CommonUtil.showMsgLong("价格不可以为空");
                     return;
                 }else {
                     product.setModelPrice(Double.parseDouble(ModelPriceET.getText().toString()));
@@ -153,14 +154,10 @@ public class ModelPriceDialogFragment extends DialogFragment {
                     maps.get(position).put("price",product.getModelPrice() + " 元");
                     products.set(position,product);
                     adapter.notifyDataSetChanged();
-                    showMsg("修改成功");
+                    CommonUtil.showMsgShort("修改成功");
                     productDialog.dismiss();
                 }
             }
         });
-    }
-
-    private void showMsg(String msg){
-        Toast.makeText(getActivity(),msg,Toast.LENGTH_SHORT).show();
     }
 }

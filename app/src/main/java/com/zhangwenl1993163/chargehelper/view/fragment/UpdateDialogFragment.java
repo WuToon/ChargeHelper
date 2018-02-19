@@ -7,7 +7,6 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +15,12 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.zhangwenl1993163.chargehelper.R;
-import com.zhangwenl1993163.chargehelper.dao.ChargeDao;
 import com.zhangwenl1993163.chargehelper.dao.ProductDao;
 import com.zhangwenl1993163.chargehelper.model.Product;
 import com.zhangwenl1993163.chargehelper.model.Record;
+import com.zhangwenl1993163.chargehelper.util.CommonUtil;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
@@ -98,7 +96,7 @@ public class UpdateDialogFragment extends DialogFragment {
                         if (onRecordChanged != null)
                             onRecordChanged.onChanged(record);
                         dialog.dismiss();
-                        showToast("修改成功");
+                        CommonUtil.showMsgShort("修改成功");
                     }else
                         field.set(dialog,false);
                 } catch (Exception e) {
@@ -153,26 +151,26 @@ public class UpdateDialogFragment extends DialogFragment {
         if (s != null && !"".equals(s)){
             record.setProcessCardNumber(Integer.parseInt(s));
         }else {
-            showToast("请输入流程卡号");
+            CommonUtil.showMsgLong("请输入流程卡号");
             return false;
         }
         s = qulifiedNumber.getText().toString();
         if (s != null && !"".equals(s)){
             record.setQulifiedNumber(Integer.parseInt(s));
         }else {
-            showToast("请输入合格产品个数");
+            CommonUtil.showMsgLong("请输入合格产品个数");
             return false;
         }
         s = record.getModelName();
         if (s != null && !"".equals(s)) {
         }else {
-            showToast("型号名称加载失败，请稍后再试");
+            CommonUtil.showMsgLong("型号名称加载失败，请稍后再试");
             return false;
         }
         Double p = record.getModelPrice();
         if (p != null && p != 0) {
         }else {
-            showToast("型号单价加载失败，请稍后再试");
+            CommonUtil.showMsgLong("型号单价加载失败，请稍后再试");
             return false;
         }
         s = comment.getText().toString();
@@ -219,10 +217,6 @@ public class UpdateDialogFragment extends DialogFragment {
 
         }
     };
-
-    private void showToast(String msg){
-        Toast.makeText(view.getContext(),msg,Toast.LENGTH_SHORT).show();
-    }
 }
 interface onRecordChanged{
     void onChanged(Record record);
