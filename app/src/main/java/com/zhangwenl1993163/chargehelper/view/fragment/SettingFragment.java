@@ -92,6 +92,9 @@ public class SettingFragment extends Fragment {
         builder.show();
     }
 
+    /**
+     * 新增工价
+     * */
     private void addProduct(){
         updateProduct = getActivity().getLayoutInflater().inflate(R.layout.update_add_model_price,null);
         modelNameET = updateProduct.findViewById(R.id.add_update_model_name);
@@ -111,6 +114,9 @@ public class SettingFragment extends Fragment {
                     return;
                 }else if (ModelPriceET.getText().toString() == null || ModelPriceET.getText().toString().equals("")){
                     showMsg("单价不可以为空");
+                    return;
+                }else if(productDao.getProductByName(modelNameET.getText().toString()).size() != 0){
+                    showMsg("型号 " + modelNameET.getText().toString() + " 已存在");
                     return;
                 }else {
                     Product product = new Product();

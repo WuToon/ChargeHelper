@@ -1,5 +1,7 @@
 package com.zhangwenl1993163.chargehelper;
 
+import android.util.TypedValue;
+
 import com.zhangwenl1993163.chargehelper.util.DBUtil;
 
 /**

@@ -53,6 +53,23 @@ public class ProductDao {
         return product;
     }
 
+    public List<Product> getProductByName(String modelName){
+        List<Product> products = new ArrayList<>();
+        db = DBUtil.getDBReadOnly(context);
+        String sql = "select * from product_list where model_name = ?";
+        Cursor cursor = db.rawQuery(sql,new String[]{modelName});
+        while (cursor.moveToNext()){
+            Product product = new Product();
+            product.setId(cursor.getInt(0));
+            product.setModelName(cursor.getString(1));
+            product.setModelPrice(cursor.getDouble(2));
+            product.setAddTimeStamp(cursor.getLong(3));
+            product.setModifyTimeStamp(cursor.getLong(4));
+            products.add(product);
+        }
+        return products;
+    }
+
 //    public void deleteProductById(Integer id){
 //        db = DBUtil.getDBWriteable(context);
 //        String sql = "delete from product_list where id = ?";
