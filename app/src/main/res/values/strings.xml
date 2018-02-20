@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ChargeHelper</string>
+    <string name="app_name">记件助手</string>
     <string name="title_change">记账</string>
     <string name="title_history">历史</string>
     <string name="title_setting">设置</string>

@@ -37,8 +37,8 @@ import java.util.Map;
 
 public class ChargeFragment extends Fragment implements View.OnClickListener {
     private Record record = new Record();
-    private TextView todayTotalCount,todayTotalMoney,monthTotalMoney,modelPrice,addDateTv;
-    private EditText processNumber,qulifiedNumber,comment;
+    private TextView todayTotalCount,todayTotalMoney,monthTotalMoney,addDateTv;
+    private EditText processNumber,qulifiedNumber,comment,modelPrice;
     private Spinner modelName;
     private Button addButton;
     private Calendar calendar = Calendar.getInstance();
@@ -133,7 +133,7 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             String name = names.get(position);
             double price = namePriceMap.get(name);
-            modelPrice.setText(price+" 元");
+            modelPrice.setText(price+"");
             record.setModelName(name);
             record.setModelPrice(price);
         }

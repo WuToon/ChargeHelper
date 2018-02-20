@@ -70,12 +70,12 @@ public class ProductDao {
         return products;
     }
 
-//    public void deleteProductById(Integer id){
-//        db = DBUtil.getDBWriteable(context);
-//        String sql = "delete from product_list where id = ?";
-//        db.execSQL(sql,new Object[]{id});
-//        db.close();
-//    }
+    public void deleteProductById(Integer id){
+        db = DBUtil.getDBWriteable(context);
+        String sql = "delete from product_list where id = ?";
+        db.execSQL(sql,new Object[]{id});
+        db.close();
+    }
 
     public void updateProduct(Product product){
         db = DBUtil.getDBWriteable(context);

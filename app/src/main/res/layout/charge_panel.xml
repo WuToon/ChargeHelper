@@ -166,10 +166,13 @@
                     android:layout_marginLeft="25dp"
                     android:text="型号单价："
                     android:textSize="16dp"/>
-                <TextView
+                <EditText
                     android:id="@+id/add_record_model_price"
                     android:layout_width="180dp"
                     android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:hint="请输入型号单价"
+                    android:maxLength="6"
                     android:textSize="16dp"/>
             </LinearLayout>
             <LinearLayout

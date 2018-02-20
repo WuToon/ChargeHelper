@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:textSize="16dp"
             android:text="产品型号："/>
-        <Spinner
+        <TextView
             android:id="@+id/update_item_model_name"
             android:layout_width="160dp"
             android:layout_height="wrap_content" />

@@ -100,31 +100,29 @@ public class ModelPriceDialogFragment extends DialogFragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (operateType == 1){
-//                deleteProduct(position);
+                deleteProduct(position);
             }else {
                 updateProduct(position);
             }
         }
     };
 
-    //暂时不可删除
-
-//    private void deleteProduct(final int position){
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        builder.setTitle("确认删除");
-//        builder.setMessage("是否删除 " + products.get(position).getModelName() + " ?");
-//        builder.setNegativeButton("取消",null);
-//        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                dao.deleteProductById(products.get(position).getId());
-//                products.remove(position);
-//                maps.remove(position);
-//                adapter.notifyDataSetChanged();
-//            }
-//        });
-//        builder.show();
-//    }
+    private void deleteProduct(final int position){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("确认删除");
+        builder.setMessage("是否删除 " + products.get(position).getModelName() + " ?");
+        builder.setNegativeButton("取消",null);
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dao.deleteProductById(products.get(position).getId());
+                products.remove(position);
+                maps.remove(position);
+                adapter.notifyDataSetChanged();
+            }
+        });
+        builder.show();
+    }
 
     private void updateProduct(final int position){
         final Product product = products.get(position);

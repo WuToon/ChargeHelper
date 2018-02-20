@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,8 +84,7 @@ public class SettingFragment extends Fragment {
     };
 
     private void showModelPriceSettings(){
-//        String[] modelPriceSettings = new String[]{"修改工价","删除工价","新增工价"};
-        String[] modelPriceSettings = new String[]{"修改工价","新增工价"};
+        String[] modelPriceSettings = new String[]{"修改工价","删除工价","新增工价"};
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("工价设置");
         builder.setItems(modelPriceSettings, new DialogInterface.OnClickListener() {
@@ -94,10 +94,10 @@ public class SettingFragment extends Fragment {
                     case 0:
                         showModelPriceList(2);
                         break;
-//                    case 1:
-//                        showModelPriceList(1);
-//                        break;
                     case 1:
+                        showModelPriceList(1);
+                        break;
+                    case 2:
                         addProduct();
                         break;
                     default:break;
@@ -159,9 +159,12 @@ public class SettingFragment extends Fragment {
     private void exportCSV(){
         List<Record> records = chargeDao.getAllRecord();
         List<String[]> data = new ArrayList<>();
-        final String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Download/";
+        final String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/ChargeHelper/";
+        if (!new File(path).exists()){
+            new File(path).mkdir();
+        }
         String fileName = "历史数据"+System.currentTimeMillis()+".csv";
-        String absPath = path + fileName;
+        final String absPath = path + fileName;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         String[] titles = new String[]{"流程卡号","型号","单价","合格个数","总金额","备注","添加日期","修改日期"};
@@ -180,16 +183,21 @@ public class SettingFragment extends Fragment {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("导出成功");
             builder.setMessage("历史数据已经成功导出，文件路径：" + absPath);
-            builder.setNegativeButton("取消",null);
-            builder.setPositiveButton("打开目录", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                    intent.setDataAndType(Uri.fromFile(new File(path)),"*/*");
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    startActivity(intent);
-                }
-            });
+            //直接打开所在文件夹
+//            builder.setNegativeButton("取消",null);
+//            builder.setPositiveButton("打开目录", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                    Uri uri = FileProvider.getUriForFile(getActivity(),
+//                            "com.zhangwenl1993163.chargehelper.fileProvider",new File(absPath));
+//                    intent.setDataAndType(uri,"*/*");
+//                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+//                    startActivity(intent);
+//                }
+//            });
+            builder.setPositiveButton("确定",null);
             builder.show();
         }
     }

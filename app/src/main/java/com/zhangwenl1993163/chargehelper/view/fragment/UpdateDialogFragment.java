@@ -37,8 +37,7 @@ import java.util.Map;
 public class UpdateDialogFragment extends DialogFragment {
     private Record record;
     private EditText cardNumber,qulifiedNumber,comment;
-    private Spinner modelName;
-    private TextView modelPrice,addTime;
+    private TextView modelPrice,addTime,modelName;
     private ProductDao productDao;
     private List<String> names = new ArrayList<>();
     private Map<String,Double> namePriceMap = new HashMap<>();
@@ -119,7 +118,6 @@ public class UpdateDialogFragment extends DialogFragment {
         qulifiedNumber = view.findViewById(R.id.update_item_qulified_num);
         comment = view.findViewById(R.id.update_item_comment);
         modelName = view.findViewById(R.id.update_item_model_name);
-        modelName.setOnItemSelectedListener(listener);
         modelPrice = view.findViewById(R.id.update_item_model_price);
         addTime = view.findViewById(R.id.update_item_add_date);
     }
@@ -133,7 +131,6 @@ public class UpdateDialogFragment extends DialogFragment {
         record.setId((Integer)m.get("id"));
         record.setProcessCardNumber((Integer)m.get("processCardNumber"));
         record.setModelName((String) m.get("modelName"));
-        loadModelNames(record.getModelName());
         record.setModelPrice((double)m.get("modelPrice"));
         record.setQulifiedNumber((Integer)m.get("qulifiedNumber"));
         record.setAddTimeStamp((Long) m.get("addTime"));
@@ -142,6 +139,8 @@ public class UpdateDialogFragment extends DialogFragment {
 
         cardNumber.setText(record.getProcessCardNumber()+"");
         qulifiedNumber.setText(record.getQulifiedNumber()+"");
+        modelName.setText(record.getModelName());
+        modelPrice.setText(record.getModelPrice()+"");
         addTime.setText(new SimpleDateFormat("yyyy-MM-dd").format(new Date(record.getAddTimeStamp())));
         comment.setText(record.getComment());
     }
@@ -179,44 +178,6 @@ public class UpdateDialogFragment extends DialogFragment {
 
         return true;
     }
-
-    /**
-     * 加载型号
-     * */
-    private void loadModelNames(String defaultItemNmae){
-        //将所有产品保存成map，key为modelName ,value为model_price,便于联动
-        List<Product> products = productDao.getAllProduct();
-        for (Product product : products){
-            names.add(product.getModelName());
-            namePriceMap.put(product.getModelName(),product.getModelPrice());
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1,names);
-        modelName.setAdapter(adapter);
-        //设置默认型号
-        modelName.setSelection(names.indexOf(defaultItemNmae));
-        //设置默认单价
-        double firstPrice = namePriceMap.get(defaultItemNmae);
-        modelPrice.setText(firstPrice+" 元");
-    }
-
-    /**
-     *spinner监听器
-     */
-    private AdapterView.OnItemSelectedListener listener = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            String name = names.get(position);
-            double price = namePriceMap.get(name);
-            modelPrice.setText(price+" 元");
-            record.setModelName(name);
-            record.setModelPrice(price);
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-
-        }
-    };
 }
 interface onRecordChanged{
     void onChanged(Record record);
