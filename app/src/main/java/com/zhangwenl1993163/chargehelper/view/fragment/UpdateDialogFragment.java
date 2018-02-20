@@ -51,6 +51,10 @@ public class UpdateDialogFragment extends DialogFragment {
     }
 
     @SuppressLint({"NewApi", "ValidFragment"})
+    public UpdateDialogFragment() {
+    }
+
+    @SuppressLint({"NewApi", "ValidFragment"})
     public UpdateDialogFragment(Map<String,Object> records) {
         this.records = records;
     }

@@ -44,6 +44,9 @@ public class ModelPriceDialogFragment extends DialogFragment {
     private SimpleAdapter adapter;
 
     @SuppressLint({"NewApi","ValidFragment"})
+    public ModelPriceDialogFragment(){
+    }
+    @SuppressLint({"NewApi","ValidFragment"})
     public ModelPriceDialogFragment(int operateType){
         this.operateType = operateType;
     }
