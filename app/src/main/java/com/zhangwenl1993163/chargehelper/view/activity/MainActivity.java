@@ -19,12 +19,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.zhangwenl1993163.chargehelper.R;
+import com.zhangwenl1993163.chargehelper.util.CommonUtil;
+import com.zhangwenl1993163.chargehelper.view.fragment.AnalyzeFragment;
 import com.zhangwenl1993163.chargehelper.view.fragment.ChargeFragment;
 import com.zhangwenl1993163.chargehelper.view.fragment.HistoryFragment;
 import com.zhangwenl1993163.chargehelper.view.fragment.SettingFragment;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-    private Fragment charge,history,setting;
+    private Fragment charge,history,setting,analyze;
     private FragmentTransaction transaction;
     private View under;
 
@@ -38,15 +40,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             switch (item.getItemId()) {
                 case R.id.navigation_charge:
                     transaction = getFragmentManager().beginTransaction();
-                    transaction.show(charge).hide(history).hide(setting).commit();
+                    transaction.show(charge).hide(history).hide(setting).hide(analyze).commit();
                     return true;
                 case R.id.navigation_history:
                     transaction = getFragmentManager().beginTransaction();
-                    transaction.show(history).hide(charge).hide(setting).commit();
+                    transaction.show(history).hide(charge).hide(setting).hide(analyze).commit();
+                    return true;
+                case R.id.navigation_analyze:
+                    transaction = getFragmentManager().beginTransaction();
+                    transaction.show(analyze).hide(history).hide(charge).hide(setting).commit();
                     return true;
                 case R.id.navigation_setting:
                     transaction = getFragmentManager().beginTransaction();
-                    transaction.show(setting).hide(charge).hide(history).commit();
+                    transaction.show(setting).hide(charge).hide(history).hide(analyze).commit();
                     return true;
             }
             return false;
@@ -109,13 +115,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //获取fragment
         charge = new ChargeFragment();
         history = new HistoryFragment();
+        analyze = new AnalyzeFragment();
         setting = new SettingFragment();
 
         transaction = getFragmentManager().beginTransaction();
         transaction.add(R.id.panel_container,charge);
         transaction.add(R.id.panel_container,history);
         transaction.add(R.id.panel_container,setting);
+        transaction.add(R.id.panel_container,analyze);
         transaction.hide(history);
+        transaction.hide(analyze);
         transaction.hide(setting);
         transaction.commit();
     }

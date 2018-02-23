@@ -12,6 +12,11 @@
         android:title="@string/title_history" />
 
     <item
+        android:id="@+id/navigation_analyze"
+        android:icon="@drawable/ic_poll_black_24dp"
+        android:title="@string/title_analyze" />
+
+    <item
         android:id="@+id/navigation_setting"
         android:icon="@drawable/ic_settings_black_24dp"
         android:title="@string/title_setting" />
