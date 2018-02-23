@@ -3,7 +3,7 @@
     <color name="colorPrimary">#0288D1</color>
     <color name="colorPrimaryDark">#026DA7</color>
     <color name="colorAccent">#0097A7</color>
-    <color name="slideMenuDel">#cfe20c0c</color>
-    <color name="slideMenuUpdate">#e9c4b72a</color>
-    <color name="slideMenuHide">#f8666666</color>
+    <color name="slideMenuDel">#F78AE0</color>
+    <color name="slideMenuUpdate">#5CC9F5</color>
+    <color name="slideMenuHide">#B0F566</color>
 </resources>

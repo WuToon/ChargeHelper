@@ -25,6 +25,7 @@ import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.zhangwenl1993163.chargehelper.R;
 import com.zhangwenl1993163.chargehelper.dao.ChargeDao;
 import com.zhangwenl1993163.chargehelper.model.Record;
+import com.zhangwenl1993163.chargehelper.util.CommonUtil;
 import com.zhangwenl1993163.chargehelper.util.DateUtil;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
     private ChargeDao chargeDao;
     private List<Map<String,Object>> records;
     private SimpleAdapter adapter;
+    private boolean showToast = false;
 
     @Nullable
     @Override
@@ -67,6 +69,7 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.query_button:
+                showToast = true;
                 loadProductList();
                 break;
             default:
@@ -144,9 +147,19 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
     private void setTips(List<Map<String,Object>> l){
         if (l != null && l.size() != 0){
             String s = "<-- 总计"+ l.size() +"条数据，点击查看详情，左滑弹出菜单 -->";
+            if (showToast){
+                CommonUtil.showMsgShort("总计"+ l.size() +"条数据");
+                showToast = false;
+            }
             tip.setText(s);
-        }else
-            tip.setText("<-- 暂无数据，请更换查询条件 -->");
+        }else{
+            String s = "暂无数据，请更换查询条件";
+            if (showToast){
+                CommonUtil.showMsgShort(s);
+                showToast = false;
+            }
+            tip.setText("<-- "+s+" -->");
+        }
     }
 
     /**
