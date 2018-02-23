@@ -69,6 +69,27 @@ public class ChargeDao {
         return l;
     }
 
+    public List<Record> getRecordByMonth(List<Long> dates){
+        db = DBUtil.getDBReadOnly(context);
+        List<Record> l = new ArrayList<>();
+        String sql = "select * from charge_list where add_time >= ? and add_time < ?";
+        Cursor cursor = db.rawQuery(sql,new String[]{dates.get(0)+"",dates.get(1)+""});
+        while (cursor.moveToNext()){
+            Record r = new Record();
+            r.setId(cursor.getInt(0));
+            r.setProcessCardNumber(cursor.getInt(1));
+            r.setModelName(cursor.getString(2));
+            r.setModelPrice(cursor.getDouble(3));
+            r.setQulifiedNumber(cursor.getInt(4));
+            r.setAddTimeStamp(cursor.getLong(5));
+            r.setModifyTimeStamp(cursor.getLong(6));
+            r.setComment(cursor.getString(7));
+            l.add(r);
+        }
+        db.close();
+        return l;
+    }
+
     public List<Map<String,Object>> getRecordMapInRange(List<Long> range, String sortItem){
         db = DBUtil.getDBReadOnly(context);
         List<Map<String,Object>> l = new ArrayList<>();

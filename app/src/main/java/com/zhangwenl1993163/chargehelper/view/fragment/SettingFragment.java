@@ -26,6 +26,7 @@ import com.zhangwenl1993163.chargehelper.model.Product;
 import com.zhangwenl1993163.chargehelper.model.Record;
 import com.zhangwenl1993163.chargehelper.util.CSVUtil;
 import com.zhangwenl1993163.chargehelper.util.CommonUtil;
+import com.zhangwenl1993163.chargehelper.util.DateUtil;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -76,7 +77,7 @@ public class SettingFragment extends Fragment {
                     showModelPriceSettings();
                     break;
                 case 1:
-                    exportCSV();
+                    showExportCSVDialog();
                     break;
                 default:break;
             }
@@ -156,14 +157,42 @@ public class SettingFragment extends Fragment {
         fragment.show(transaction,"dialog");
     }
 
-    private void exportCSV(){
-        List<Record> records = chargeDao.getAllRecord();
+    private void showExportCSVDialog(){
+        String[] items = new String[]{"当月数据","所有数据"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("导出数据");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                exportCSV(which);
+            }
+        });
+        builder.setNegativeButton("取消",null);
+        builder.show();
+    }
+
+    /**
+     * @param type 0为导出当月 1 导出历史所有所有
+     * */
+    private void exportCSV(int type){
+        List<Record> records = null;
+        if (type == 0){
+            records = chargeDao.getRecordByMonth(DateUtil.getMonthRange(System.currentTimeMillis()));
+        }else {
+            records = chargeDao.getAllRecord();
+        }
         List<String[]> data = new ArrayList<>();
         final String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/ChargeHelper/";
         if (!new File(path).exists()){
             new File(path).mkdir();
         }
-        String fileName = "历史数据"+System.currentTimeMillis()+".csv";
+        String fileName = null;
+        if (type == 0) {
+            fileName = new SimpleDateFormat("yyyy年MM月").format(System.currentTimeMillis())+
+                    "数据"+System.currentTimeMillis()+".csv";
+        }else {
+            fileName = "历史所有数据"+System.currentTimeMillis()+".csv";
+        }
         final String absPath = path + fileName;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -182,7 +211,8 @@ public class SettingFragment extends Fragment {
         if (flag){
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("导出成功");
-            builder.setMessage("历史数据已经成功导出，文件路径：" + absPath);
+            builder.setMessage((type == 0 ? new SimpleDateFormat("yyyy年MM月").
+                    format(System.currentTimeMillis()) : "历史所有") + "数据已经成功导出，文件路径：" + absPath);
             //直接打开所在文件夹
 //            builder.setNegativeButton("取消",null);
 //            builder.setPositiveButton("打开目录", new DialogInterface.OnClickListener() {
