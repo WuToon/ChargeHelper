@@ -38,12 +38,11 @@ import java.util.Map;
  * Created by zhang on 2018/2/7.
  */
 
-public class HistoryFragment extends Fragment implements View.OnClickListener {
+public class HistoryFragment extends Fragment {
     private final String PROCESS_CARD_NUMBER = "process_card_number",
             MODEL_NAME = "model_name",ADD_DATE = "add_time";
     private Spinner queryYear,queryMonth,sortWay;
     private TextView tip;
-    private Button queryBtn;
     private SwipeMenuListView container;
     private Calendar calendar = Calendar.getInstance();
     private List<Integer> years;
@@ -51,7 +50,6 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
     private ChargeDao chargeDao;
     private List<Map<String,Object>> records;
     private SimpleAdapter adapter;
-    private boolean showToast = false;
 
     @Nullable
     @Override
@@ -63,18 +61,6 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         init();
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.query_button:
-                showToast = true;
-                loadProductList();
-                break;
-            default:
-                break;
-        }
     }
 
     @Override
@@ -96,13 +82,9 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
         queryMonth.setOnItemSelectedListener(monthListemer);
         sortWay = getView().findViewById(R.id.sort_item);
         sortWay.setOnItemSelectedListener(sortListener);
-        queryBtn = getView().findViewById(R.id.query_button);
-        queryBtn.setBackgroundColor(getColorPrimary());
-        queryBtn.setOnClickListener(this);
         container = getView().findViewById(R.id.history_container);
         container.setOnItemClickListener(listener);
         setSlideMenu();
-        loadProductList();
     }
 
     private AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
@@ -147,17 +129,9 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
     private void setTips(List<Map<String,Object>> l){
         if (l != null && l.size() != 0){
             String s = "<-- 总计"+ l.size() +"条数据，点击查看详情，左滑弹出菜单 -->";
-            if (showToast){
-                CommonUtil.showMsgShort("总计"+ l.size() +"条数据");
-                showToast = false;
-            }
             tip.setText(s);
         }else{
             String s = "暂无数据，请更换查询条件";
-            if (showToast){
-                CommonUtil.showMsgShort(s);
-                showToast = false;
-            }
             tip.setText("<-- "+s+" -->");
         }
     }
@@ -207,13 +181,13 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
                 update.setTitleSize(16);
                 menu.addMenuItem(update);
 
-                SwipeMenuItem hide = new SwipeMenuItem(getView().getContext());
-                hide.setWidth(120);
-                hide.setBackground(new ColorDrawable(getResources().getColor(R.color.slideMenuHide)));
-                hide.setTitle("隐藏");
-                hide.setTitleColor(Color.BLACK);
-                hide.setTitleSize(16);
-                menu.addMenuItem(hide);
+//                SwipeMenuItem hide = new SwipeMenuItem(getView().getContext());
+//                hide.setWidth(120);
+//                hide.setBackground(new ColorDrawable(getResources().getColor(R.color.slideMenuHide)));
+//                hide.setTitle("隐藏");
+//                hide.setTitleColor(Color.BLACK);
+//                hide.setTitleSize(16);
+//                menu.addMenuItem(hide);
             }
         };
         container.setMenuCreator(creator);
@@ -227,9 +201,9 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
                     case 1:
                         updateItem(position);
                         break;
-                    case 2://隐藏条目
-                        hideItem(position);
-                        break;
+//                    case 2://隐藏条目
+//                        hideItem(position);
+//                        break;
                     default:break;
                 }
                 return false;
@@ -290,6 +264,7 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             calendar.set(years.get(position),calendar.get(Calendar.MONTH),15);
+            loadProductList();
         }
 
         @Override
@@ -303,6 +278,7 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             calendar.set(calendar.get(Calendar.YEAR),position,15);
+            loadProductList();
         }
 
         @Override
@@ -318,12 +294,15 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
             switch (position){
                 case 0:
                     sortColoumName = PROCESS_CARD_NUMBER;
+                    loadProductList();
                     break;
                 case 1:
                     sortColoumName = MODEL_NAME;
+                    loadProductList();
                     break;
                 case 2:
                     sortColoumName = ADD_DATE;
+                    loadProductList();
                     break;
                 default:
                     break;

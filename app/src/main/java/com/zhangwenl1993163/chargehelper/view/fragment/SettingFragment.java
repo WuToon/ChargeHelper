@@ -167,7 +167,6 @@ public class SettingFragment extends Fragment {
                 exportCSV(which);
             }
         });
-        builder.setNegativeButton("取消",null);
         builder.show();
     }
 
