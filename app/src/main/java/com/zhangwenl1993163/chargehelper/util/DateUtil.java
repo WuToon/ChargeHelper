@@ -59,6 +59,21 @@ public class DateUtil {
     }
 
     /**
+     * 获取某年时间戳
+     * */
+    public static List<Long> getYearRange(long timestamp){
+        List<Long> longs = new ArrayList<>();
+        Calendar now = Calendar.getInstance();
+        Calendar start = Calendar.getInstance();
+        start.set(now.get(Calendar.YEAR),0,1,0,0,0);
+        Calendar end = Calendar.getInstance();
+        end.set(now.get(Calendar.YEAR)+1,0,1,0,0,0);
+        longs.add(start.getTimeInMillis());
+        longs.add(end.getTimeInMillis());
+        return longs;
+    }
+
+    /**
      * 获取最近三年的年份
      * */
     public static List<Integer> getLatest3Years(){

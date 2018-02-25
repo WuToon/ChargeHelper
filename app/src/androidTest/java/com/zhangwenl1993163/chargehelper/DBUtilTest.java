@@ -38,4 +38,12 @@ public class DBUtilTest {
         Log.d(TAG,"=================end===============");
         Log.d(TAG,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(longs.get(1))));
     }
+    @Test
+    public void getYearRangeTest(){
+        List<Long> longs = DateUtil.getYearRange(System.currentTimeMillis());
+        Log.d(TAG,"=================start===============");
+        Log.d(TAG,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(longs.get(0))));
+        Log.d(TAG,"=================end===============");
+        Log.d(TAG,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(longs.get(1))));
+    }
 }

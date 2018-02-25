@@ -37,7 +37,7 @@ import java.util.Map;
 
 public class ChargeFragment extends Fragment implements View.OnClickListener {
     private Record record = new Record();
-    private TextView todayTotalCount,todayTotalMoney,monthTotalMoney,addDateTv;
+    private TextView todayTotalCount,todayTotalMoney,monthTotalMoney,yearTotalMoney,addDateTv;
     private EditText processNumber,qulifiedNumber,comment,modelPrice;
     private Spinner modelName;
     private Button addButton;
@@ -84,6 +84,7 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
         todayTotalCount = getView().findViewById(R.id.today_charge_count);
         todayTotalMoney = getView().findViewById(R.id.today_total_money);
         monthTotalMoney = getView().findViewById(R.id.month_total_money);
+        yearTotalMoney = getView().findViewById(R.id.year_total_money);
         loadStatistics();
         loadModels();
     }
@@ -117,12 +118,15 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
     private void loadStatistics(){
         List<Long> day = DateUtil.getDayRange(new Date().getTime());
         List<Long> month = DateUtil.getMonthRange(new Date().getTime());
+        List<Long> year = DateUtil.getYearRange(new Date().getTime());
         int count = chargeDao.getWorkedCount(day);
         BigDecimal money = chargeDao.getTotalMoney(day);
         BigDecimal monthMoney = chargeDao.getTotalMoney(month);
+        BigDecimal yearMoney = chargeDao.getTotalMoney(year);
         todayTotalCount.setText(count+"");
         todayTotalMoney.setText(money.setScale(2,BigDecimal.ROUND_HALF_UP)+"");
         monthTotalMoney.setText(monthMoney.setScale(2,BigDecimal.ROUND_HALF_UP)+"");
+        yearTotalMoney.setText(yearMoney.setScale(2,BigDecimal.ROUND_HALF_UP)+"");
     }
 
     /**
