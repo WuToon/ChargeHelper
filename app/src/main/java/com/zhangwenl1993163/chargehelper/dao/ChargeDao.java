@@ -69,7 +69,7 @@ public class ChargeDao {
         return l;
     }
 
-    public List<Record> getRecordByMonth(List<Long> dates){
+    public List<Record> getRecordInRange(List<Long> dates){
         db = DBUtil.getDBReadOnly(context);
         List<Record> l = new ArrayList<>();
         String sql = "select * from charge_list where add_time >= ? and add_time < ?";

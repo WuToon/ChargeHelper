@@ -25,6 +25,11 @@
         <item>近30天日收入</item>
     </string-array>
 
+    <string-array name="model_analyze">
+        <item>近12月型号分布</item>
+        <item>近30天型号分布</item>
+    </string-array>
+
     <string-array name="sort_item">
         <item>流程卡号</item>
         <item>产品型号</item>

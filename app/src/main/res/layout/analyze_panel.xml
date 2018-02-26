@@ -2,33 +2,72 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layout_margin="5dp">
-    <LinearLayout
+    android:orientation="vertical">
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="工资趋势"
-            android:textSize="25dp"
-            android:textStyle="bold"
-            android:layout_weight="1"/>
-        <Spinner
-            android:id="@+id/salary_analyze_items"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:entries="@array/salary_analyze"/>
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/analyze_salary"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:orientation="horizontal"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"/>
+        android:layout_height="match_parent"
+        android:layout_margin="5dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="工资趋势"
+                    android:textSize="25dp"
+                    android:textStyle="bold"
+                    android:layout_weight="1"/>
+                <Spinner
+                    android:id="@+id/salary_analyze_items"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:entries="@array/salary_analyze"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/analyze_salary"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="型号分布"
+                    android:textSize="25dp"
+                    android:textStyle="bold"
+                    android:layout_weight="1"/>
+                <Spinner
+                    android:id="@+id/modelName_analyze_items"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:entries="@array/model_analyze"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/analyze_model"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"/>
+        </LinearLayout>
+    </ScrollView>
+
+
 
 </LinearLayout>

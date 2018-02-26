@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,19 +15,27 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.MPPointF;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.zhangwenl1993163.chargehelper.R;
 import com.zhangwenl1993163.chargehelper.dao.ChargeDao;
+import com.zhangwenl1993163.chargehelper.model.Record;
 import com.zhangwenl1993163.chargehelper.util.DateUtil;
 
 import java.math.BigDecimal;
@@ -34,23 +43,25 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by zhangwenliang on 2018/2/23.
  */
 
-public class AnalyzeFragment extends Fragment implements Spinner.OnItemSelectedListener {
+public class AnalyzeFragment extends Fragment{
     private final Long MILLISECONDS_OF_DAY = (long) 24*60*60*1000;
     private final String TAG = AnalyzeFragment.class.getName();
     private View containerView;
-    private LinearLayout lineChartContainer;
+    private LinearLayout lineChartContainer,pieChartContainer;
     private ChargeDao chargeDao;
-    private Spinner salaryItem;
-    private int salaryItemType = 0;
+    private Spinner salaryItem,modelItem;
+    private int salaryItemType = 0,modelItemType = 0;
     private List<String> titleDatas;
 
     @Nullable
@@ -64,26 +75,141 @@ public class AnalyzeFragment extends Fragment implements Spinner.OnItemSelectedL
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         lineChartContainer = getView().findViewById(R.id.analyze_salary);
+        pieChartContainer = getView().findViewById(R.id.analyze_model);
+
         salaryItem = getView().findViewById(R.id.salary_analyze_items);
-        salaryItem.setOnItemSelectedListener(this);
+        salaryItem.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                salaryItemType = position;
+                initLineChart(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        modelItem = getView().findViewById(R.id.modelName_analyze_items);
+        modelItem.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                modelItemType = position;
+                initPieChart(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         chargeDao = new ChargeDao(getActivity());
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
-        if (!hidden)
+        if (!hidden){
             initLineChart(salaryItemType);
+            initPieChart(modelItemType);
+        }
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        salaryItemType = position;
-        initLineChart(position);
-    }
+    /**
+     * @param type 0:12月型号分布 1：30天型号分布
+     * */
+    private void initPieChart(int type){
+        PieChart pieChart = new PieChart(getActivity());
+        List<Record> records = null;
+        if (type == 0){
+            records = chargeDao.getRecordInRange(DateUtil.getYearRange(System.currentTimeMillis()));
+        }else {
+            records = chargeDao.getRecordInRange(DateUtil.getMonthRange(System.currentTimeMillis()));
+        }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
+        //统计各个型号出现次数
+        Map<String,Integer> modelMap = new HashMap<>();
+        for (Record record : records){
+            String modelName = record.getModelName();
+            int count = modelMap.get(modelName) != null ? (modelMap.get(modelName)+1) : 1;
+            modelMap.put(modelName,count);
+        }
 
+        //map按值由大到小排序
+        List<Map.Entry<String,Integer>> mapEntries = new ArrayList<>(modelMap.entrySet());
+        Collections.sort(mapEntries, new Comparator<Map.Entry<String,Integer>>() {
+            @Override
+            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                return o2.getValue() - o1.getValue();
+            }
+        });
+
+        //选取数量排名前四的型号，其他型号相加为其他,value为所占百分比
+        List<PieEntry> entries = new ArrayList<>();
+        if (mapEntries.size()>5){
+            for (int i = 0 ; i < 4 ; i++){
+                PieEntry entry = new PieEntry((float)mapEntries.get(i).getValue(),mapEntries.get(i).getKey());
+                entries.add(entry);
+            }
+            int x = 0;
+            for (int i = 4 ; i < mapEntries.size() ; i++){
+                x += mapEntries.get(i).getValue();
+            }
+            PieEntry entry = new PieEntry((float)x,"其它");
+            entries.add(entry);
+        }else {
+            for (int i = 0 ; i < mapEntries.size() ; i++){
+                PieEntry entry = new PieEntry((float)mapEntries.get(i).getValue(),mapEntries.get(i).getKey());
+                entries.add(entry);
+            }
+        }
+
+        PieDataSet pieDataSet = new PieDataSet(entries,type == 0 ? "近一年型号分布" : "近一月型号分布");
+        //饼图各部分颜色
+        pieDataSet.setColors(Color.parseColor("#B0F566"),Color.parseColor("#4AF2A1"),
+                Color.parseColor("#5CC9F5"),Color.parseColor("#6638F0"),
+                Color.parseColor("#F78AE0"));
+        //字体颜色
+        pieDataSet.setValueTextColor(Color.WHITE);
+        pieDataSet.setValueTextSize(12);
+
+        PieData pieData = new PieData(pieDataSet);
+        //格式化value
+        IValueFormatter formatter = new IValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+                return ((int)(value*100))/100.0+"%";
+            }
+        };
+        pieData.setValueFormatter(formatter);
+
+        pieChart.setData(pieData);
+        //不显示description
+        pieChart.setDescription(null);
+        //显示百分比
+        pieChart.setUsePercentValues(true);
+        //不显示label
+//        pieChart.setDrawEntryLabels(false);
+        //设置entry label颜色
+        pieChart.setEntryLabelColor(Color.BLACK);
+
+        //中间圆盘半径,值为百分比
+//        pieChart.setHoleRadius(20);
+        //设置比例图
+//        Legend mLegend = pieChart.getLegend();
+        //设置比例图显示在饼图的哪个位置
+//        mLegend.setPosition(Legend.LegendPosition.RIGHT_OF_CHART);
+        //设置比例图的形状，默认是方形,可为方形、圆形、线性
+//        mLegend.setForm(Legend.LegendForm.CIRCLE);
+        //动画
+        pieChart.animateXY(500,500);
+
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        pieChart.setLayoutParams(params);
+
+        pieChartContainer.removeAllViews();
+        pieChartContainer.addView(pieChart);
     }
 
     /**

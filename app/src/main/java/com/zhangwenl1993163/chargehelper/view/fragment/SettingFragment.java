@@ -176,7 +176,7 @@ public class SettingFragment extends Fragment {
     private void exportCSV(int type){
         List<Record> records = null;
         if (type == 0){
-            records = chargeDao.getRecordByMonth(DateUtil.getMonthRange(System.currentTimeMillis()));
+            records = chargeDao.getRecordInRange(DateUtil.getMonthRange(System.currentTimeMillis()));
         }else {
             records = chargeDao.getAllRecord();
         }
