@@ -32,6 +32,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".view.activity.CheckActivity"
+            android:label="对账"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
+
+        </activity>
     </application>
     <!--请求权限-->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>

@@ -1,8 +1,10 @@
 package com.zhangwenl1993163.chargehelper.view.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,6 +29,7 @@ import com.zhangwenl1993163.chargehelper.model.Record;
 import com.zhangwenl1993163.chargehelper.util.CSVUtil;
 import com.zhangwenl1993163.chargehelper.util.CommonUtil;
 import com.zhangwenl1993163.chargehelper.util.DateUtil;
+import com.zhangwenl1993163.chargehelper.view.activity.CheckActivity;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -59,11 +62,19 @@ public class SettingFragment extends Fragment {
         init();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            Uri uri = data.getData();
+            CommonUtil.showMsgLong(data.getData().getPath());
+        }
+    }
+
     private void init(){
         productDao = new ProductDao(getActivity());
         chargeDao = new ChargeDao(getActivity());
         container = getView().findViewById(R.id.setting_container);
-        String[] lists = new String[]{"工价设置","导出历史数据"};
+        String[] lists = new String[]{"工价设置","导出历史数据","对账"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,lists);
         container.setAdapter(adapter);
         container.setOnItemClickListener(listener);
@@ -78,6 +89,10 @@ public class SettingFragment extends Fragment {
                     break;
                 case 1:
                     showExportCSVDialog();
+                    break;
+                case 2:
+                    Intent intent = new Intent(getActivity().getApplicationContext(), CheckActivity.class);
+                    startActivity(intent);
                     break;
                 default:break;
             }
