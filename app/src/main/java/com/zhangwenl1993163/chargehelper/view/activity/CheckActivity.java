@@ -211,13 +211,13 @@ public class CheckActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Map<String,Object> record = records.get(position);
             List<String> strs = new ArrayList<>();
-            strs.add("      流程卡号："+record.get("processCardNumber"));
+            strs.add("      流程卡号："+((Double)record.get("processCardNumber")).intValue());
             strs.add("      产品型号："+record.get("modelName"));
             strs.add("      型号单价："+record.get("modelPrice"));
-            strs.add("      合格个数："+record.get("qulifiedNumber"));
+            strs.add("      合格个数："+((Double)record.get("qulifiedNumber")).intValue());
             strs.add("      总计金额："+record.get("totalMoney"));
             strs.add("      添加日期："+new SimpleDateFormat("yyyy-MM-dd  HH:mm").
-                    format(new Date((Long) record.get("addTime"))));
+                    format(new Date(((Double) record.get("addTime")).longValue())));
             strs.add("      备         注："+record.get("comment"));
             String[] sa = strs.toArray(new String[0]);
 
