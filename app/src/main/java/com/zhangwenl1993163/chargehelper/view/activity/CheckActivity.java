@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,23 +19,19 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.zhangwenl1993163.chargehelper.R;
 import com.zhangwenl1993163.chargehelper.dao.ChargeDao;
-import com.zhangwenl1993163.chargehelper.util.CommonUtil;
 import com.zhangwenl1993163.chargehelper.util.DateUtil;
 import com.zhangwenl1993163.chargehelper.view.fragment.CheckSearchDialogFragment;
 
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -125,10 +120,19 @@ public class CheckActivity extends AppCompatActivity {
     private void loadData(){
         SharedPreferences sharedPreferences = getSharedPreferences("checkData",MODE_PRIVATE);
         String recordJson = sharedPreferences.getString("records",null);
+        Date date = new Date(sharedPreferences.getLong("date", System.currentTimeMillis()));
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("对账 ("+new SimpleDateFormat("yyyy-MM").format(date) + ")");
+        actionBar.show();
+
         if (recordJson != null && !"".equals(recordJson)){
-            Gson gson = new Gson();
-            Type type = new TypeToken<List<Map<String,Object>>>(){}.getType();
-            records = gson.fromJson(recordJson,type);
+            records = new ArrayList<>();
+            JSONArray array = JSON.parseArray(recordJson);
+            for (int i = 0 ; i < array.size() ; i++){
+                JSONObject jsonObject = array.getJSONObject(i);
+                Map<String,Object> map = jsonObject.getInnerMap();
+                records.add(map);
+            }
         }else {
             records = query(new Date(),CheckSearchDialogFragment.PROCESS_CARD_NUMBER);
         }
@@ -141,7 +145,7 @@ public class CheckActivity extends AppCompatActivity {
     }
 
     private void saveData(){
-        String recordsJson = new Gson().toJson(records);
+        String recordsJson = JSON.toJSONString(records);
         SharedPreferences sharedPreferences = getSharedPreferences("checkData",MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("records",recordsJson);
@@ -152,6 +156,15 @@ public class CheckActivity extends AppCompatActivity {
      * 查询数据库
      * */
     private List<Map<String,Object>> query(Date date,String sortColoumName){
+        //将日期保存到sharedPreferences
+        SharedPreferences sharedPreferences = getSharedPreferences("checkData",MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong("date",date.getTime());
+        editor.commit();
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("对账 ("+new SimpleDateFormat("yyyy-MM").format(date) + ")");
+        actionBar.show();
+
         List<Long> l = DateUtil.getMonthRange(date.getTime());
         List<Map<String,Object>> records = chargeDao.getRecordMapInRange(l,sortColoumName);
         return records;
@@ -195,7 +208,7 @@ public class CheckActivity extends AppCompatActivity {
      * */
     private void setTips(List<Map<String,Object>> l){
         if (l != null && l.size() != 0){
-            String s = "<-- 总计"+ l.size() +"条数据，点击查看详情，左滑弹出菜单 -->";
+            String s = "<-- 剩余"+ l.size() +"条数据，点击查看详情，左滑弹出菜单 -->";
             tips.setText(s);
         }else{
             String s = "暂无数据，请更换查询条件";
@@ -211,13 +224,13 @@ public class CheckActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Map<String,Object> record = records.get(position);
             List<String> strs = new ArrayList<>();
-            strs.add("      流程卡号："+((Double)record.get("processCardNumber")).intValue());
+            strs.add("      流程卡号："+record.get("processCardNumber"));
             strs.add("      产品型号："+record.get("modelName"));
             strs.add("      型号单价："+record.get("modelPrice"));
-            strs.add("      合格个数："+((Double)record.get("qulifiedNumber")).intValue());
+            strs.add("      合格个数："+record.get("qulifiedNumber"));
             strs.add("      总计金额："+record.get("totalMoney"));
             strs.add("      添加日期："+new SimpleDateFormat("yyyy-MM-dd  HH:mm").
-                    format(new Date(((Double) record.get("addTime")).longValue())));
+                    format(new Date((Long) record.get("addTime"))));
             strs.add("      备         注："+record.get("comment"));
             String[] sa = strs.toArray(new String[0]);
 

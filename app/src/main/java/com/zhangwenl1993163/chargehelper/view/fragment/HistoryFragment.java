@@ -180,14 +180,6 @@ public class HistoryFragment extends Fragment {
                 update.setTitleColor(Color.BLACK);
                 update.setTitleSize(16);
                 menu.addMenuItem(update);
-
-//                SwipeMenuItem hide = new SwipeMenuItem(getView().getContext());
-//                hide.setWidth(120);
-//                hide.setBackground(new ColorDrawable(getResources().getColor(R.color.slideMenuHide)));
-//                hide.setTitle("隐藏");
-//                hide.setTitleColor(Color.BLACK);
-//                hide.setTitleSize(16);
-//                menu.addMenuItem(hide);
             }
         };
         container.setMenuCreator(creator);
@@ -201,9 +193,6 @@ public class HistoryFragment extends Fragment {
                     case 1:
                         updateItem(position);
                         break;
-//                    case 2://隐藏条目
-//                        hideItem(position);
-//                        break;
                     default:break;
                 }
                 return false;
