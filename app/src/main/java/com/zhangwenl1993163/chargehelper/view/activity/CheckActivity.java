@@ -117,15 +117,21 @@ public class CheckActivity extends AppCompatActivity {
         loadData();
     }
 
+    /**
+     * 加载records，先从sharedpreferences加载上次数据，若不存在查询数据库加载当月数据
+     */
     private void loadData(){
         SharedPreferences sharedPreferences = getSharedPreferences("checkData",MODE_PRIVATE);
-        String recordJson = sharedPreferences.getString("records",null);
+        //查询记录的日期，修改actionbar的标题
         Date date = new Date(sharedPreferences.getLong("date", System.currentTimeMillis()));
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("对账 ("+new SimpleDateFormat("yyyy-MM").format(date) + ")");
         actionBar.show();
 
+        //查询records
+        String recordJson = sharedPreferences.getString("records",null);
         if (recordJson != null && !"".equals(recordJson)){
+            //反序列化查询结果
             records = new ArrayList<>();
             JSONArray array = JSON.parseArray(recordJson);
             for (int i = 0 ; i < array.size() ; i++){
@@ -136,7 +142,10 @@ public class CheckActivity extends AppCompatActivity {
         }else {
             records = query(new Date(),CheckSearchDialogFragment.PROCESS_CARD_NUMBER);
         }
+
+        //设置提示
         setTips(records);
+        //更新adapter
         adapter = new SimpleAdapter(CheckActivity.this,records,R.layout.record_list_item,
                 new String[]{"processCardNumber","modelName","qulifiedNumber","totalMoney"},
                 new int[]{R.id.item_process_card_number,R.id.item_module_name,
@@ -144,8 +153,13 @@ public class CheckActivity extends AppCompatActivity {
         swipeMenuListView.setAdapter(adapter);
     }
 
+    /**
+     * 保存当前剩余records记录
+     */
     private void saveData(){
+        //转成json
         String recordsJson = JSON.toJSONString(records);
+        //保存
         SharedPreferences sharedPreferences = getSharedPreferences("checkData",MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("records",recordsJson);
@@ -161,10 +175,11 @@ public class CheckActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putLong("date",date.getTime());
         editor.commit();
+        //修改actionbar标题
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("对账 ("+new SimpleDateFormat("yyyy-MM").format(date) + ")");
         actionBar.show();
-
+        //查询结果
         List<Long> l = DateUtil.getMonthRange(date.getTime());
         List<Map<String,Object>> records = chargeDao.getRecordMapInRange(l,sortColoumName);
         return records;
