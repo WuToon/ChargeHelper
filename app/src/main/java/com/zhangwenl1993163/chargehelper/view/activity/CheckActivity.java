@@ -18,15 +18,15 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.zhangwenl1993163.chargehelper.R;
 import com.zhangwenl1993163.chargehelper.dao.ChargeDao;
+import com.zhangwenl1993163.chargehelper.util.CommonUtil;
 import com.zhangwenl1993163.chargehelper.util.DateUtil;
+import com.zhangwenl1993163.chargehelper.util.JsonUtil;
 import com.zhangwenl1993163.chargehelper.view.fragment.CheckSearchDialogFragment;
 
 import java.text.SimpleDateFormat;
@@ -45,6 +45,9 @@ public class CheckActivity extends AppCompatActivity {
     private ChargeDao chargeDao;
     private List<Map<String,Object>> records;
     private SimpleAdapter adapter;
+    private String tempJson;
+    private boolean showBackMenuItem = false;
+    private Integer totalCount;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +59,15 @@ public class CheckActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         saveData();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //隐藏回退按钮
+        showBackMenuItem = false;
+        invalidateOptionsMenu();
+        loadData();
     }
 
     private void initUI(){
@@ -81,6 +93,12 @@ public class CheckActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.check_actionbar_menu,menu);
+        MenuItem backMenuItem = menu.findItem(R.id.action_bar_back);
+        if (showBackMenuItem){
+            backMenuItem.setVisible(true);
+        }else {
+            backMenuItem.setVisible(false);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -92,29 +110,23 @@ public class CheckActivity extends AppCompatActivity {
                     @Override
                     public void onSelected(Date date, String sortItem) {
                         records = query(date,sortItem);
-                        adapter = new SimpleAdapter(CheckActivity.this,records,R.layout.record_list_item,
-                                new String[]{"processCardNumber","modelName","qulifiedNumber","totalMoney"},
-                                new int[]{R.id.item_process_card_number,R.id.item_module_name,
-                                        R.id.item_qulified_number,R.id.item_total_money});
-                        swipeMenuListView.setAdapter(adapter);
-                        setTips(records);
+                        reflushList();
                     }
                 });
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 fragment.show(transaction,"check");
 
                 break;
+            case R.id.action_bar_back:
+                //回退
+                backLastStep();
+                //隐藏按钮
+                showBackMenuItem = false;
+                invalidateOptionsMenu();
+                break;
             default:break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        loadData();
     }
 
     /**
@@ -124,33 +136,23 @@ public class CheckActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("checkData",MODE_PRIVATE);
         //查询记录的日期，修改actionbar的标题
         Date date = new Date(sharedPreferences.getLong("date", System.currentTimeMillis()));
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("对账 ("+new SimpleDateFormat("yyyy-MM").format(date) + ")");
-        actionBar.show();
+        reflushActionBarTitle(date);
+
+        //获取总个数
+        if (totalCount == null) {
+            totalCount = chargeDao.getRecordInRange(DateUtil.getMonthRange(date.getTime())).size();
+        }
 
         //查询records
         String recordJson = sharedPreferences.getString("records",null);
         if (recordJson != null && !"".equals(recordJson)){
             //反序列化查询结果
-            records = new ArrayList<>();
-            JSONArray array = JSON.parseArray(recordJson);
-            for (int i = 0 ; i < array.size() ; i++){
-                JSONObject jsonObject = array.getJSONObject(i);
-                Map<String,Object> map = jsonObject.getInnerMap();
-                records.add(map);
-            }
+            records = JsonUtil.json2MapList(recordJson);
+            //若records长度为0，从数据库查询当月
         }else {
             records = query(new Date(),CheckSearchDialogFragment.PROCESS_CARD_NUMBER);
         }
-
-        //设置提示
-        setTips(records);
-        //更新adapter
-        adapter = new SimpleAdapter(CheckActivity.this,records,R.layout.record_list_item,
-                new String[]{"processCardNumber","modelName","qulifiedNumber","totalMoney"},
-                new int[]{R.id.item_process_card_number,R.id.item_module_name,
-                        R.id.item_qulified_number,R.id.item_total_money});
-        swipeMenuListView.setAdapter(adapter);
+        reflushList();
     }
 
     /**
@@ -176,13 +178,28 @@ public class CheckActivity extends AppCompatActivity {
         editor.putLong("date",date.getTime());
         editor.commit();
         //修改actionbar标题
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("对账 ("+new SimpleDateFormat("yyyy-MM").format(date) + ")");
-        actionBar.show();
+        reflushActionBarTitle(date);
         //查询结果
         List<Long> l = DateUtil.getMonthRange(date.getTime());
         List<Map<String,Object>> records = chargeDao.getRecordMapInRange(l,sortColoumName);
+        //总加工个数
+        totalCount = records.size();
         return records;
+    }
+
+    /**
+     * 返回上一步
+     */
+    private void backLastStep(){
+        //反序列化临时变量，并将值赋给records
+        if (tempJson != null) {
+            records = JsonUtil.json2MapList(tempJson);
+            //刷新列表
+            reflushList();
+            CommonUtil.showMsgShort("回退成功");
+        } else {
+            CommonUtil.showMsgShort("临时变量为空，无法回退");
+        }
     }
 
     /**
@@ -208,7 +225,12 @@ public class CheckActivity extends AppCompatActivity {
         @Override
         public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
             if (index == 0){
-                //隐藏
+                //隐藏前现将当前所有记录保存到临时变量，便于后期回退
+                tempJson = JSON.toJSONString(records);
+                //显示回退按钮
+                showBackMenuItem = true;
+                invalidateOptionsMenu();
+
                 records.remove(position);
                 adapter.notifyDataSetChanged();
                 swipeMenuListView.setAdapter(adapter);
@@ -219,15 +241,41 @@ public class CheckActivity extends AppCompatActivity {
     };
 
     /**
+     * 刷新列表
+     */
+    private void reflushList(){
+        //设置提示
+        setTips(records);
+        //更新adapter
+        adapter = new SimpleAdapter(CheckActivity.this,records,R.layout.record_list_item,
+                new String[]{"processCardNumber","modelName","qulifiedNumber","totalMoney"},
+                new int[]{R.id.item_process_card_number,R.id.item_module_name,
+                        R.id.item_qulified_number,R.id.item_total_money});
+        swipeMenuListView.setAdapter(adapter);
+    }
+
+    /**
+     * 修改actionbar标题
+     */
+    private void reflushActionBarTitle(Date date){
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("对账 ("+new SimpleDateFormat("yyyy-MM").format(date) + ")");
+        actionBar.show();
+    }
+
+    /**
      * 设置tips
      * */
     private void setTips(List<Map<String,Object>> l){
+        //已对账个数
+        int x = totalCount - l.size();
+        //进度,保留两位
+        double schedule = (int)((x*1.0)/totalCount * 10000) /100.0;
         if (l != null && l.size() != 0){
-            String s = "<-- 剩余"+ l.size() +"条数据，点击查看详情，左滑弹出菜单 -->";
+            String s = "<-- 剩余"+ l.size() +"条数据，对账进度：" + schedule +"% -->";
             tips.setText(s);
         }else{
-            String s = "暂无数据，请更换查询条件";
-            tips.setText("<-- "+s+" -->");
+            tips.setText("<-- 暂无数据，请更换查询条件 -->");
         }
     }
 

@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/action_bar_back"
+        android:icon="@drawable/ic_settings_backup_restore_black_24dp"
+        android:title="上一步"
+        app:showAsAction="always"
+        android:visible="false"/>
     <item android:id="@+id/action_bar_search"
         android:icon="@drawable/ic_search_black_24dp"
         android:title="查询"
