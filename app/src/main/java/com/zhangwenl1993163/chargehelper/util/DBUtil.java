@@ -15,23 +15,61 @@ import java.io.OutputStream;
  */
 
 public class DBUtil {
+    private final static String TAG = DBUtil.class.getName();
     private static final String DBNAME = "chargehelper.db";
+    private static final int DBVERSION = 2;
     private static final String DBPATH = "data/data/com.zhangwenl1993163.chargehelper/databases/";
 
     public static SQLiteDatabase getDBReadOnly(Context context){
-        if (!checkDB()){
-            copyDB(context);
-            return SQLiteDatabase.openDatabase(DBPATH + DBNAME,null,SQLiteDatabase.OPEN_READONLY);
-        }else
-            return SQLiteDatabase.openDatabase(DBPATH + DBNAME,null,SQLiteDatabase.OPEN_READONLY);
+        return getDB(context,false);
     }
 
     public static SQLiteDatabase getDBWriteable(Context context){
+        return getDB(context,true);
+    }
+
+    private static SQLiteDatabase getDB(Context context,boolean writeAble){
+        //检查数据库是否存在，不存在则为第一次安装，复制数据库
         if (!checkDB()){
             copyDB(context);
-            return SQLiteDatabase.openDatabase(DBPATH + DBNAME,null,SQLiteDatabase.OPEN_READWRITE);
-        }else
-            return SQLiteDatabase.openDatabase(DBPATH + DBNAME,null,SQLiteDatabase.OPEN_READWRITE);
+        }
+
+        SQLiteDatabase database = SQLiteDatabase.openDatabase(DBPATH + DBNAME,null,SQLiteDatabase.OPEN_READWRITE);
+        int version = database.getVersion();
+        Log.d(TAG,"当前版本："+version);
+        Log.d(TAG,"最新版本："+DBVERSION);
+        //若当前数据库版本与DBVERSION不一致，升级数据库
+        if (version != DBVERSION){
+            upgradeDB(database);
+            database.setVersion(DBVERSION);
+        }
+
+        database.close();
+        return SQLiteDatabase.openDatabase(DBPATH + DBNAME,null,writeAble ? SQLiteDatabase.OPEN_READWRITE : SQLiteDatabase.OPEN_READONLY);
+    }
+
+    private static void upgradeDB(SQLiteDatabase db){
+        //由当前数据库版本的下一个版本开始循环，直至更新到最新版
+        for (int i = db.getVersion() + 1 ; i <= DBVERSION ; i++){
+            //历次版本数据库更新内容
+            switch (i){
+                case 2:
+                    //新增考勤表
+                    String sql = "CREATE TABLE 'attendance_list' (" +
+                            "'id' INTEGER NOT NULL," +
+                            "'attendance_people' TEXT(10) NOT NULL," +
+                            "'attendance_hours' INTEGER NOT NULL," +
+                            "'attendance_type' INTEGER NOT NULL," +
+                            "'add_time' DECIMAL NOT NULL," +
+                            "'comment' TEXT(255)," +
+                            "PRIMARY KEY('ID'))";
+                    db.execSQL(sql);
+                    Log.d(TAG,"考勤表升级成功");
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     private static void copyDB(Context context){
@@ -82,10 +120,5 @@ public class DBUtil {
             database.close();
             return true;
         }
-    }
-
-    public static void init(Context context){
-        if (!checkDB())
-            copyDB(context);
     }
 }

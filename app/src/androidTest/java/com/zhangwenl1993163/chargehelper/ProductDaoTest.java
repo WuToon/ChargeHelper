@@ -31,7 +31,6 @@ public class ProductDaoTest {
 
     @Test
     public void getAllTest(){
-        DBUtil.init(context);
         List<Product> products = dao.getAllProduct();
         Log.i(TAG,"======================================");
         Log.i(TAG,products.toString());
@@ -39,7 +38,6 @@ public class ProductDaoTest {
 
     @Test
     public void insertTest(){
-        DBUtil.init(context);
         Product p = new Product();
         p.setModelName("hahah");
         p.setModelPrice(2.33);
@@ -50,7 +48,6 @@ public class ProductDaoTest {
     }
     @Test
     public void selectByIDTest(){
-        DBUtil.init(context);
         Product product = dao.getProductById(160);
         Log.i(TAG,"=====================================");
         Log.i(TAG,product.toString());
@@ -58,7 +55,6 @@ public class ProductDaoTest {
 
     @Test
     public void deleteByIdTest(){
-        DBUtil.init(context);
         dao.deleteProductById(168);
     }
 

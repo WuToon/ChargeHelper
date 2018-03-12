@@ -14,7 +14,7 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
-        DBUtil.init(this);
+//        DBUtil.init(this);
     }
 
     public static Context getContext(){
