@@ -17,7 +17,7 @@ import java.io.OutputStream;
 public class DBUtil {
     private final static String TAG = DBUtil.class.getName();
     private static final String DBNAME = "chargehelper.db";
-    private static final int DBVERSION = 2;
+    private static final int DBVERSION = 1;
     private static final String DBPATH = "data/data/com.zhangwenl1993163.chargehelper/databases/";
 
     public static SQLiteDatabase getDBReadOnly(Context context){
@@ -53,7 +53,7 @@ public class DBUtil {
         for (int i = db.getVersion() + 1 ; i <= DBVERSION ; i++){
             //历次版本数据库更新内容
             switch (i){
-                case 2:
+                case 1:
                     //新增考勤表
                     String sql = "CREATE TABLE 'attendance_list' (" +
                             "'id' INTEGER NOT NULL," +
