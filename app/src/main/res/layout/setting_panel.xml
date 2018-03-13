@@ -16,7 +16,7 @@
             android:textStyle="bold"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"
-            android:textSize="25dp"/>
+            android:textSize="25sp"/>
 
         <ListView
             android:id="@+id/setting_container"

@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textStyle="italic"
-            android:textSize="13dp"/>
+            android:textSize="13sp"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,28 +25,28 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:text="流程卡号"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:text="型号"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:text="个数"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:text="总金额"/>
         </LinearLayout>
         <View

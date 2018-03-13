@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:text="型号名称："
-        android:textSize="16dp"/>
+        android:textSize="16sp"/>
         <EditText
             android:id="@+id/add_update_model_name"
             android:layout_width="150dp"
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="型号单价："
-            android:textSize="16dp"/>
+            android:textSize="16sp"/>
         <EditText
             android:id="@+id/add_update_model_price"
             android:layout_width="150dp"
