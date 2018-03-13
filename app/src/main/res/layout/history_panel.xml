@@ -54,7 +54,12 @@
                 android:id="@+id/sort_item"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:entries="@array/sort_item"></Spinner>
+                android:entries="@array/sort_item"/>
+            <Spinner
+                android:id="@+id/sort_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/sort_type"/>
         </LinearLayout>
 
         <View

@@ -41,12 +41,14 @@ import java.util.Map;
 public class HistoryFragment extends Fragment {
     private final String PROCESS_CARD_NUMBER = "process_card_number",
             MODEL_NAME = "model_name",ADD_DATE = "add_time";
-    private Spinner queryYear,queryMonth,sortWay;
+    private final String ASC = "asc",DESC = "desc";
+    private Spinner queryYear,queryMonth,sortWay,sortTypeSpinner;
     private TextView tip;
     private SwipeMenuListView container;
     private Calendar calendar = Calendar.getInstance();
     private List<Integer> years;
     private String sortColoumName = PROCESS_CARD_NUMBER;
+    private String sortType = ASC;
     private ChargeDao chargeDao;
     private List<Map<String,Object>> records;
     private SimpleAdapter adapter;
@@ -82,6 +84,8 @@ public class HistoryFragment extends Fragment {
         queryMonth.setOnItemSelectedListener(monthListemer);
         sortWay = getView().findViewById(R.id.sort_item);
         sortWay.setOnItemSelectedListener(sortListener);
+        sortTypeSpinner = getView().findViewById(R.id.sort_type);
+        sortTypeSpinner.setOnItemSelectedListener(sortTypeListener);
         container = getView().findViewById(R.id.history_container);
         container.setOnItemClickListener(listener);
         setSlideMenu();
@@ -141,7 +145,7 @@ public class HistoryFragment extends Fragment {
      * */
     private List<Map<String,Object>> query(){
         List<Long> l = DateUtil.getMonthRange(calendar.getTimeInMillis());
-        List<Map<String,Object>> records = chargeDao.getRecordMapInRange(l,sortColoumName);
+        List<Map<String,Object>> records = chargeDao.getRecordMapInRange(l,sortColoumName,sortType);
         return records;
     }
 
@@ -291,6 +295,30 @@ public class HistoryFragment extends Fragment {
                     break;
                 case 2:
                     sortColoumName = ADD_DATE;
+                    loadProductList();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    };
+
+    //监听器
+    private AdapterView.OnItemSelectedListener sortTypeListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            switch (position){
+                case 0:
+                    sortType = ASC;
+                    loadProductList();
+                    break;
+                case 1:
+                    sortType = DESC;
                     loadProductList();
                     break;
                 default:

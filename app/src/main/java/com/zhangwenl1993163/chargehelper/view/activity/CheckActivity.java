@@ -108,8 +108,8 @@ public class CheckActivity extends AppCompatActivity {
             case R.id.action_bar_search:
                 CheckSearchDialogFragment fragment = new CheckSearchDialogFragment(new CheckSearchDialogFragment.OnSelectedListener() {
                     @Override
-                    public void onSelected(Date date, String sortItem) {
-                        records = query(date,sortItem);
+                    public void onSelected(Date date, String sortItem,String sortType) {
+                        records = query(date,sortItem,sortType);
                         reflushList();
                     }
                 });
@@ -150,7 +150,7 @@ public class CheckActivity extends AppCompatActivity {
             records = JsonUtil.json2MapList(recordJson);
             //若records长度为0，从数据库查询当月
         }else {
-            records = query(new Date(),CheckSearchDialogFragment.PROCESS_CARD_NUMBER);
+            records = query(new Date(),CheckSearchDialogFragment.PROCESS_CARD_NUMBER,CheckSearchDialogFragment.ASC);
         }
         reflushList();
     }
@@ -171,7 +171,7 @@ public class CheckActivity extends AppCompatActivity {
     /**
      * 查询数据库
      * */
-    private List<Map<String,Object>> query(Date date,String sortColoumName){
+    private List<Map<String,Object>> query(Date date,String sortColoumName,String sortType){
         //将日期保存到sharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("checkData",MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -181,7 +181,7 @@ public class CheckActivity extends AppCompatActivity {
         reflushActionBarTitle(date);
         //查询结果
         List<Long> l = DateUtil.getMonthRange(date.getTime());
-        List<Map<String,Object>> records = chargeDao.getRecordMapInRange(l,sortColoumName);
+        List<Map<String,Object>> records = chargeDao.getRecordMapInRange(l,sortColoumName,sortType);
         //总加工个数
         totalCount = records.size();
         return records;

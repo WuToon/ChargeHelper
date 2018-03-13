@@ -90,10 +90,10 @@ public class ChargeDao {
         return l;
     }
 
-    public List<Map<String,Object>> getRecordMapInRange(List<Long> range, String sortItem){
+    public List<Map<String,Object>> getRecordMapInRange(List<Long> range, String sortItem,String sortType){
         db = DBUtil.getDBReadOnly(context);
         List<Map<String,Object>> l = new ArrayList<>();
-        String sql = "select *,(qulified_number * model_price) from charge_list where add_time >= ? and add_time < ? order by "+sortItem+" asc";
+        String sql = "select *,(qulified_number * model_price) from charge_list where add_time >= ? and add_time < ? order by "+sortItem+" "+sortType;
         Cursor cursor = db.rawQuery(sql,new String[]{range.get(0)+"",range.get(1)+""});
         while (cursor.moveToNext()){
             Map<String,Object> m = new HashMap<>();

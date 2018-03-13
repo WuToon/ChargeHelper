@@ -30,12 +30,13 @@ import java.util.List;
 public class CheckSearchDialogFragment extends DialogFragment{
     public static final String PROCESS_CARD_NUMBER = "process_card_number",
             MODEL_NAME = "model_name",ADD_DATE = "add_time";
+    public static final String ASC = "asc",DESC = "desc";
     private View view;
-    private Spinner yearSpinner,monthSpinner,sortSpinner;
+    private Spinner yearSpinner,monthSpinner,sortSpinner,sortTypeSpinner;
     private OnSelectedListener onSelectedListener;
     private List<Integer> years;
     private Calendar date = Calendar.getInstance();
-    private String sortItem;
+    private String sortItem,sortType = ASC;
 
     @SuppressLint({"NewApi","ValidFragment"})
     public CheckSearchDialogFragment() {
@@ -65,7 +66,7 @@ public class CheckSearchDialogFragment extends DialogFragment{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (onSelectedListener != null)
-                    onSelectedListener.onSelected(date.getTime(),sortItem);
+                    onSelectedListener.onSelected(date.getTime(),sortItem,sortType);
             }
         });
 
@@ -124,6 +125,25 @@ public class CheckSearchDialogFragment extends DialogFragment{
 
             }
         });
+        sortTypeSpinner = view.findViewById(R.id.check_sort_type);
+        String[] f = getResources().getStringArray(R.array.sort_type);
+        ArrayAdapter<String> g = new ArrayAdapter<String>(getView().getContext(),android.R.layout.simple_list_item_1,f);
+        sortTypeSpinner.setAdapter(g);
+        sortTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0){
+                    sortType = ASC;
+                }else{
+                    sortType = DESC;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     /**
@@ -140,6 +160,6 @@ public class CheckSearchDialogFragment extends DialogFragment{
     }
 
     public interface OnSelectedListener{
-        void onSelected(Date date,String sortItem);
+        void onSelected(Date date,String sortItem,String sortType);
     }
 }
