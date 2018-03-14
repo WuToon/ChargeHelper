@@ -1,5 +1,7 @@
 package com.zhangwenl1993163.chargehelper.util;
 
+import com.zhangwenl1993163.chargehelper.model.Constants;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -10,8 +12,6 @@ import java.util.List;
  */
 
 public class DateUtil {
-    private static final Long MILLISECONDS_OF_DAY = (long) 24*60*60*1000;
-
     /**
      * 获取某天零点到第二天零点的时间戳
      *
@@ -28,7 +28,7 @@ public class DateUtil {
                 now.get(Calendar.DAY_OF_MONTH),0,0,0);
         Long startTimeStamp = start.getTimeInMillis();
         //当天结束的时间戳
-        Long endTimeStamp = startTimeStamp + MILLISECONDS_OF_DAY;
+        Long endTimeStamp = startTimeStamp + Constants.MILLISECONDS_OF_DAY;
         longs.add(startTimeStamp);
         longs.add(endTimeStamp);
         return longs;

@@ -6,7 +6,9 @@ import android.database.sqlite.SQLiteDatabase;
 import com.zhangwenl1993163.chargehelper.model.Attendance;
 import com.zhangwenl1993163.chargehelper.util.DBUtil;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zhangwenliang on 2018/3/12.
@@ -47,7 +49,7 @@ public class AttendanceDao {
             Attendance attendance = new Attendance();
             attendance.setId(cursor.getInt(0));
             attendance.setAttendancePeople(cursor.getString(1));
-            attendance.setAttendanceHours(cursor.getInt(2));
+            attendance.setAttendanceHours(cursor.getDouble(2));
             attendance.setAttendanceType(cursor.getInt(3));
             attendance.setAddTime(cursor.getLong(4));
             attendance.setComment(cursor.getString(5));
@@ -58,22 +60,22 @@ public class AttendanceDao {
         return result;
     }
 
-    public List<Attendance> getAttendanceByTypeInRange(int attendanceType,List<Long> dates){
+    public List<Map<String,Object>> getAttendanceByTypeInRange(int attendanceType, List<Long> dates,String sortType){
         db = DBUtil.getDBReadOnly(context);
 
-        List<Attendance> result = new ArrayList<>();
-        String sql = "select * from attendance_list where attendance_type = ? and add_time >= ? and add_time < ?";
-        Cursor cursor = db.rawQuery(sql,new String[]{String.valueOf(attendanceType),String.valueOf(dates.get(0)),
-        String.valueOf(dates.get(1))});
+        List<Map<String,Object>> result = new ArrayList<>();
+        String sql = "select * from attendance_list where attendance_type = ? and add_time >= ? and add_time < ? order by add_time "+sortType;
+        Cursor cursor = db.rawQuery(sql,new String[]{String.valueOf(attendanceType),
+                String.valueOf(dates.get(0)), String.valueOf(dates.get(1))});
         while (cursor.moveToNext()){
-            Attendance attendance = new Attendance();
-            attendance.setId(cursor.getInt(0));
-            attendance.setAttendancePeople(cursor.getString(1));
-            attendance.setAttendanceHours(cursor.getInt(2));
-            attendance.setAttendanceType(cursor.getInt(3));
-            attendance.setAddTime(cursor.getLong(4));
-            attendance.setComment(cursor.getString(5));
-            result.add(attendance);
+            Map<String,Object> map = new HashMap<>();
+            map.put("id",cursor.getInt(0));
+            map.put("attendancePeople",cursor.getString(1));
+            map.put("attendanceHours",cursor.getDouble(2));
+            map.put("attendanceType",cursor.getInt(3));
+            map.put("addTime",cursor.getLong(4));
+            map.put("comment",cursor.getString(5));
+            result.add(map);
         }
 
         db.close();

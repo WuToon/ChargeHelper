@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.zhangwenl1993163.chargehelper.model.Constants;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,9 +18,7 @@ import java.io.OutputStream;
 
 public class DBUtil {
     private final static String TAG = DBUtil.class.getName();
-    private static final String DBNAME = "chargehelper.db";
     private static final int DBVERSION = 1;
-    private static final String DBPATH = "data/data/com.zhangwenl1993163.chargehelper/databases/";
 
     public static SQLiteDatabase getDBReadOnly(Context context){
         return getDB(context,false);
@@ -34,7 +34,7 @@ public class DBUtil {
             copyDB(context);
         }
 
-        SQLiteDatabase database = SQLiteDatabase.openDatabase(DBPATH + DBNAME,null,SQLiteDatabase.OPEN_READWRITE);
+        SQLiteDatabase database = SQLiteDatabase.openDatabase(Constants.DBPATH + Constants.DBNAME,null,SQLiteDatabase.OPEN_READWRITE);
         int version = database.getVersion();
         Log.d(TAG,"数据库当前版本："+version);
         Log.d(TAG,"数据库最新版本："+DBVERSION);
@@ -45,7 +45,7 @@ public class DBUtil {
         }
 
         database.close();
-        return SQLiteDatabase.openDatabase(DBPATH + DBNAME,null,writeAble ? SQLiteDatabase.OPEN_READWRITE : SQLiteDatabase.OPEN_READONLY);
+        return SQLiteDatabase.openDatabase(Constants.DBPATH + Constants.DBNAME,null,writeAble ? SQLiteDatabase.OPEN_READWRITE : SQLiteDatabase.OPEN_READONLY);
     }
 
     private static void upgradeDB(SQLiteDatabase db){
@@ -76,11 +76,11 @@ public class DBUtil {
         InputStream is = null;
         OutputStream os = null;
         try {
-            File file = new File(DBPATH);
+            File file = new File(Constants.DBPATH);
             if (!file.exists())
                 file.mkdir();
-            is = context.getAssets().open(DBNAME);
-            os = new FileOutputStream(DBPATH + DBNAME);
+            is = context.getAssets().open(Constants.DBNAME);
+            os = new FileOutputStream(Constants.DBPATH + Constants.DBNAME);
             byte[] buf = new byte[1024];
             int len = 0;
             while ((len = is.read(buf)) > 0){
@@ -107,7 +107,7 @@ public class DBUtil {
         }
     }
     private static boolean checkDB(){
-        String path = DBPATH + DBNAME;
+        String path = Constants.DBPATH + Constants.DBNAME;
         SQLiteDatabase database = null;
         try {
             database = SQLiteDatabase.openDatabase(path,null,SQLiteDatabase.OPEN_READONLY);

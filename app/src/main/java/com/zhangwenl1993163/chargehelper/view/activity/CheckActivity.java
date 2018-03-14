@@ -24,6 +24,7 @@ import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.zhangwenl1993163.chargehelper.R;
 import com.zhangwenl1993163.chargehelper.dao.ChargeDao;
+import com.zhangwenl1993163.chargehelper.model.Constants;
 import com.zhangwenl1993163.chargehelper.util.CommonUtil;
 import com.zhangwenl1993163.chargehelper.util.DateUtil;
 import com.zhangwenl1993163.chargehelper.util.JsonUtil;
@@ -150,7 +151,7 @@ public class CheckActivity extends AppCompatActivity {
             records = JsonUtil.json2MapList(recordJson);
             //若records长度为0，从数据库查询当月
         }else {
-            records = query(new Date(),CheckSearchDialogFragment.PROCESS_CARD_NUMBER,CheckSearchDialogFragment.ASC);
+            records = query(new Date(), Constants.PROCESS_CARD_NUMBER,Constants.ASC);
         }
         reflushList();
     }

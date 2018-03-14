@@ -24,6 +24,7 @@ import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.zhangwenl1993163.chargehelper.R;
 import com.zhangwenl1993163.chargehelper.dao.ChargeDao;
+import com.zhangwenl1993163.chargehelper.model.Constants;
 import com.zhangwenl1993163.chargehelper.model.Record;
 import com.zhangwenl1993163.chargehelper.util.CommonUtil;
 import com.zhangwenl1993163.chargehelper.util.DateUtil;
@@ -39,16 +40,13 @@ import java.util.Map;
  */
 
 public class HistoryFragment extends Fragment {
-    private final String PROCESS_CARD_NUMBER = "process_card_number",
-            MODEL_NAME = "model_name",ADD_DATE = "add_time";
-    private final String ASC = "asc",DESC = "desc";
     private Spinner queryYear,queryMonth,sortWay,sortTypeSpinner;
     private TextView tip;
     private SwipeMenuListView container;
     private Calendar calendar = Calendar.getInstance();
     private List<Integer> years;
-    private String sortColoumName = PROCESS_CARD_NUMBER;
-    private String sortType = ASC;
+    private String sortColoumName = Constants.PROCESS_CARD_NUMBER;
+    private String sortType = Constants.ASC;
     private ChargeDao chargeDao;
     private List<Map<String,Object>> records;
     private SimpleAdapter adapter;
@@ -230,6 +228,7 @@ public class HistoryFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 chargeDao.deleteRecordById(id);
                 hideItem(position);
+                CommonUtil.showMsg("删除成功");
             }
         });
         builder.show();
@@ -286,15 +285,15 @@ public class HistoryFragment extends Fragment {
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             switch (position){
                 case 0:
-                    sortColoumName = PROCESS_CARD_NUMBER;
+                    sortColoumName = Constants.PROCESS_CARD_NUMBER;
                     loadProductList();
                     break;
                 case 1:
-                    sortColoumName = MODEL_NAME;
+                    sortColoumName = Constants.MODEL_NAME;
                     loadProductList();
                     break;
                 case 2:
-                    sortColoumName = ADD_DATE;
+                    sortColoumName = Constants.ADD_DATE;
                     loadProductList();
                     break;
                 default:
@@ -314,11 +313,11 @@ public class HistoryFragment extends Fragment {
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             switch (position){
                 case 0:
-                    sortType = ASC;
+                    sortType = Constants.ASC;
                     loadProductList();
                     break;
                 case 1:
-                    sortType = DESC;
+                    sortType = Constants.DESC;
                     loadProductList();
                     break;
                 default:

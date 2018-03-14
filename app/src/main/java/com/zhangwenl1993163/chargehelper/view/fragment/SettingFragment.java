@@ -29,6 +29,7 @@ import com.zhangwenl1993163.chargehelper.model.Record;
 import com.zhangwenl1993163.chargehelper.util.CSVUtil;
 import com.zhangwenl1993163.chargehelper.util.CommonUtil;
 import com.zhangwenl1993163.chargehelper.util.DateUtil;
+import com.zhangwenl1993163.chargehelper.view.activity.AttendanceActivity;
 import com.zhangwenl1993163.chargehelper.view.activity.CheckActivity;
 
 import java.io.File;
@@ -74,7 +75,7 @@ public class SettingFragment extends Fragment {
         productDao = new ProductDao(getActivity());
         chargeDao = new ChargeDao(getActivity());
         container = getView().findViewById(R.id.setting_container);
-        String[] lists = new String[]{"工价设置","导出历史数据","对账"};
+        String[] lists = new String[]{"工价设置","导出历史数据","对账","考勤记录"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,lists);
         container.setAdapter(adapter);
         container.setOnItemClickListener(listener);
@@ -93,6 +94,9 @@ public class SettingFragment extends Fragment {
                 case 2:
                     Intent intent = new Intent(getActivity().getApplicationContext(), CheckActivity.class);
                     startActivity(intent);
+                    break;
+                case 3:
+                    showAttendanceTypeDialog();
                     break;
                 default:break;
             }
@@ -180,6 +184,27 @@ public class SettingFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 exportCSV(which);
+            }
+        });
+        builder.show();
+    }
+
+    private void showAttendanceTypeDialog(){
+        String[] items = new String[]{"加班记录","请假记录"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(getView().getContext());
+        builder.setTitle("选择考勤类型");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(getActivity().getApplicationContext(),AttendanceActivity.class);
+                if (which == 0){
+                    //加班
+                    intent.putExtra("attendanceType",2);
+                }else {
+                    //请假
+                    intent.putExtra("attendanceType",1);
+                }
+                startActivity(intent);
             }
         });
         builder.show();

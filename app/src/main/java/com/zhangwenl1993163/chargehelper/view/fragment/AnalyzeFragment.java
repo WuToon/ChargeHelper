@@ -35,6 +35,7 @@ import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.zhangwenl1993163.chargehelper.R;
 import com.zhangwenl1993163.chargehelper.dao.ChargeDao;
+import com.zhangwenl1993163.chargehelper.model.Constants;
 import com.zhangwenl1993163.chargehelper.model.Record;
 import com.zhangwenl1993163.chargehelper.util.DateUtil;
 
@@ -55,8 +56,6 @@ import java.util.Set;
  */
 
 public class AnalyzeFragment extends Fragment{
-    private final Long MILLISECONDS_OF_DAY = (long) 24*60*60*1000;
-    private final String TAG = AnalyzeFragment.class.getName();
     private View containerView;
     private LinearLayout lineChartContainer,pieChartContainer;
     private ChargeDao chargeDao;
@@ -353,7 +352,7 @@ public class AnalyzeFragment extends Fragment{
             map.put("salary",bigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).toString());
             mapList.add(map);
 
-            timestamp = timestamp - MILLISECONDS_OF_DAY;
+            timestamp = timestamp - Constants.MILLISECONDS_OF_DAY;
         }
         Collections.reverse(mapList);
         return mapList;

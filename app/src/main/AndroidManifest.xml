@@ -36,7 +36,11 @@
             android:label="对账"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
-
+        </activity>
+        <activity android:name=".view.activity.AttendanceActivity"
+            android:label="考勤"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
         </activity>
     </application>
     <!--请求权限-->
