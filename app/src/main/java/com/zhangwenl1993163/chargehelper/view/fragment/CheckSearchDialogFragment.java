@@ -29,12 +29,13 @@ import java.util.List;
  */
 
 public class CheckSearchDialogFragment extends DialogFragment{
-    private View view;
+    private View view,sortItemLinearLayout;
     private Spinner yearSpinner,monthSpinner,sortSpinner,sortTypeSpinner;
     private OnSelectedListener onSelectedListener;
     private List<Integer> years;
     private Calendar date = Calendar.getInstance();
     private String sortItem,sortType = Constants.ASC;
+    private boolean hideSortItemLinearLayout;
 
     @SuppressLint({"NewApi","ValidFragment"})
     public CheckSearchDialogFragment() {
@@ -69,6 +70,10 @@ public class CheckSearchDialogFragment extends DialogFragment{
         });
 
         return builder.create();
+    }
+
+    public void setHideSortItemLinearLayout(boolean hideSortItemLinearLayout) {
+        this.hideSortItemLinearLayout = hideSortItemLinearLayout;
     }
 
     @Override
@@ -142,6 +147,11 @@ public class CheckSearchDialogFragment extends DialogFragment{
 
             }
         });
+
+        sortItemLinearLayout = view.findViewById(R.id.check_sort_item_linearLayout);
+        if (hideSortItemLinearLayout){
+            sortItemLinearLayout.setVisibility(View.GONE);
+        }
     }
 
     /**
