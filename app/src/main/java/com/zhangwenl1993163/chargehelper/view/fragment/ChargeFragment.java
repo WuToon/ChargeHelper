@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,11 +14,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import com.zhangwenl1993163.chargehelper.R;
+import com.zhangwenl1993163.chargehelper.dao.AttendanceDao;
 import com.zhangwenl1993163.chargehelper.dao.ChargeDao;
 import com.zhangwenl1993163.chargehelper.dao.ProductDao;
+import com.zhangwenl1993163.chargehelper.model.Attendance;
 import com.zhangwenl1993163.chargehelper.model.Product;
 import com.zhangwenl1993163.chargehelper.model.Record;
 import com.zhangwenl1993163.chargehelper.util.CommonUtil;
@@ -37,15 +41,20 @@ import java.util.Map;
 
 public class ChargeFragment extends Fragment implements View.OnClickListener {
     private Record record = new Record();
-    private TextView todayTotalCount,todayTotalMoney,monthTotalMoney,yearTotalMoney,addDateTv;
-    private EditText processNumber,qulifiedNumber,comment,modelPrice;
-    private Spinner modelName;
+    private TextView todayTotalCount,todayTotalMoney,monthTotalMoney,yearTotalMoney,addDateTv,attendanceAddDateTV;
+    private EditText processNumber,qulifiedNumber,comment,modelPrice,attendanceNameET,attendanceHoursEt,attendanceCommentET;
+    private RadioGroup attendanceTypeRG;
+    private Spinner modelName,addTypeSP;
     private Button addButton;
-    private Calendar calendar = Calendar.getInstance();
+    private Calendar calendar = Calendar.getInstance(),attendanceCalendar = Calendar.getInstance();
     private ProductDao productDao;
     private ChargeDao chargeDao;
+    private AttendanceDao attendanceDao;
     private Map<String,Double> namePriceMap = new HashMap<>();
     private List<String> names = new ArrayList<>();
+    private int attendanceType = 2;
+    private int addTypeFlag = 0;
+    private View addRecordArea,addAttendanceArea;
 
     @Nullable
     @Override
@@ -67,6 +76,7 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
     private void init(){
         productDao = new ProductDao(getView().getContext());
         chargeDao = new ChargeDao(getView().getContext());
+        attendanceDao = new AttendanceDao(getView().getContext());
         calendar.setTime(new Date());
         processNumber = getView().findViewById(R.id.add_record_process_num);
         modelName = getView().findViewById(R.id.add_record_model_name);
@@ -85,22 +95,55 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
         todayTotalMoney = getView().findViewById(R.id.today_total_money);
         monthTotalMoney = getView().findViewById(R.id.month_total_money);
         yearTotalMoney = getView().findViewById(R.id.year_total_money);
+        //==============考勤ui开始==============
+        attendanceNameET = getView().findViewById(R.id.add_attendance_name);
+        attendanceHoursEt = getView().findViewById(R.id.add_attendance_hours);
+        attendanceCommentET = getView().findViewById(R.id.add_attendance_comment);
+        attendanceAddDateTV = getView().findViewById(R.id.add_attendance_add_date);
+        attendanceAddDateTV.setText(new SimpleDateFormat("yyyy-MM-dd").format(attendanceCalendar.getTime()));
+        attendanceAddDateTV.setOnClickListener(this);
+        attendanceTypeRG = getView().findViewById(R.id.add_attendance_type);
+        attendanceTypeRG.setOnCheckedChangeListener(onCheckedChangeListener);
+        //==============考勤ui结束==============
+        addTypeSP = getView().findViewById(R.id.charge_add_type);
+        addTypeSP.setOnItemSelectedListener(addTypeListen);
+        addRecordArea = getView().findViewById(R.id.charge_add_record_area);
+        addAttendanceArea = getView().findViewById(R.id.charge_add_attendance_area);
         loadStatistics();
         loadModels();
     }
+
+    //radioGroup监听器
+    private RadioGroup.OnCheckedChangeListener onCheckedChangeListener = new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            if (checkedId == R.id.add_attendance_1){
+                //加班
+                attendanceType = 2;
+            }else {
+                attendanceType = 1;
+            }
+        }
+    };
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.add_record_add_button:
-                insertRecord();
-                return;
-
+                if (addTypeFlag == 0) {
+                    insertRecord();
+                } else {
+                    insertAttendance();
+                }
+                break;
             case R.id.add_record_add_date:
-                loadDatePicker();
-                return;
+                loadDatePicker(1);
+                break;
+            case R.id.add_attendance_add_date:
+                loadDatePicker(2);
+                break;
             default:
-                return;
+                break;
         }
     }
 
@@ -130,7 +173,31 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
     }
 
     /**
-     * 列表点击事件
+     * 添加类型点击事件
+     */
+    private AdapterView.OnItemSelectedListener addTypeListen = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            addTypeFlag = position;
+            if (position == 0){
+                //添加record
+                addRecordArea.setVisibility(View.VISIBLE);
+                addAttendanceArea.setVisibility(View.GONE);
+            }else{
+                //添加考勤
+                addRecordArea.setVisibility(View.GONE);
+                addAttendanceArea.setVisibility(View.VISIBLE);
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    };
+
+    /**
+     * 型号列表点击事件
      * */
     private AdapterView.OnItemSelectedListener listener = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -150,15 +217,27 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
 
     /**
      * 设置日期弹窗
+     * @param type 1 添加产品记录，2 考勤记录
      * */
-    private void loadDatePicker(){
-        DatePickerDialog dialog = new DatePickerDialog(getView().getContext(), new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                calendar.set(year,month,dayOfMonth);
-                addDateTv.setText(new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime()));
-            }
-        },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
+    private void loadDatePicker(int type){
+        DatePickerDialog dialog;
+        if (type == 1) {
+            dialog = new DatePickerDialog(getView().getContext(), new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                    calendar.set(year,month,dayOfMonth);
+                    addDateTv.setText(new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime()));
+                }
+            },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
+        } else {
+            dialog = new DatePickerDialog(getView().getContext(), new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                    attendanceCalendar.set(year,month,dayOfMonth);
+                    attendanceAddDateTV.setText(new SimpleDateFormat("yyyy-MM-dd").format(attendanceCalendar.getTime()));
+                }
+            },attendanceCalendar.get(Calendar.YEAR),attendanceCalendar.get(Calendar.MONTH),attendanceCalendar.get(Calendar.DAY_OF_MONTH));
+        }
         dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         dialog.show();
     }
@@ -228,6 +307,39 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
         addDateTv.setText(new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime()));
         comment.setText("");
         //===============================
+        CommonUtil.showMsg("添加成功");
+    }
+
+    private void insertAttendance(){
+        Attendance attendance = new Attendance();
+        String s = attendanceNameET.getText().toString();
+        if (s == null || "".equals(s.trim())){
+            CommonUtil.showMsg("请输入姓名");
+            return;
+        }else {
+            attendance.setAttendancePeople(s);
+        }
+
+        s = attendanceHoursEt.getText().toString();
+        if (s == null || "".equals(s.trim())){
+            CommonUtil.showMsg("请输入时长");
+            return;
+        }else{
+            attendance.setAttendanceHours(Double.parseDouble(s));
+        }
+
+        attendance.setAttendanceType(attendanceType);
+
+        attendance.setAddTime(attendanceCalendar.getTimeInMillis());
+
+        attendance.setComment(attendanceCommentET.getText().toString().trim());
+
+        //添加到数据库
+        attendanceDao.insert(attendance);
+        //清空输入框
+        attendanceNameET.setText("");
+        attendanceHoursEt.setText("");
+        attendanceCommentET.setText("");
         CommonUtil.showMsg("添加成功");
     }
 

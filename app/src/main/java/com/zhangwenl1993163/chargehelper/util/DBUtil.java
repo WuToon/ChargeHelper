@@ -58,7 +58,7 @@ public class DBUtil {
                     String sql = "CREATE TABLE 'attendance_list' (" +
                             "'id' INTEGER NOT NULL," +
                             "'attendance_people' TEXT(10) NOT NULL," +
-                            "'attendance_hours' INTEGER NOT NULL," +
+                            "'attendance_hours' REAL NOT NULL," +
                             "'attendance_type' INTEGER NOT NULL," +
                             "'add_time' DECIMAL NOT NULL," +
                             "'comment' TEXT(255)," +

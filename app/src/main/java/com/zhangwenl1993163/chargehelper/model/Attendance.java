@@ -7,7 +7,7 @@ package com.zhangwenl1993163.chargehelper.model;
 public class Attendance {
     private int id;
     private String attendancePeople;
-    private int attendanceHours;
+    private double attendanceHours;
     //1 请假 2 加班
     private int attendanceType;
     private long addTime;
@@ -29,11 +29,11 @@ public class Attendance {
         this.attendancePeople = attendancePeople;
     }
 
-    public int getAttendanceHours() {
+    public double getAttendanceHours() {
         return attendanceHours;
     }
 
-    public void setAttendanceHours(int attendanceHours) {
+    public void setAttendanceHours(double attendanceHours) {
         this.attendanceHours = attendanceHours;
     }
 

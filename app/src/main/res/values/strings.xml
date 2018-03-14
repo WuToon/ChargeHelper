@@ -40,5 +40,10 @@
         <item>升序</item>
         <item>降序</item>
     </string-array>
+
+    <string-array name="add_type">
+        <item>新增产品记录</item>
+        <item>新增考勤记录</item>
+    </string-array>
 </resources>
 
