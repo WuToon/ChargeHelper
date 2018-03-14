@@ -36,8 +36,8 @@ public class DBUtil {
 
         SQLiteDatabase database = SQLiteDatabase.openDatabase(DBPATH + DBNAME,null,SQLiteDatabase.OPEN_READWRITE);
         int version = database.getVersion();
-        Log.d(TAG,"当前版本："+version);
-        Log.d(TAG,"最新版本："+DBVERSION);
+        Log.d(TAG,"数据库当前版本："+version);
+        Log.d(TAG,"数据库最新版本："+DBVERSION);
         //若当前数据库版本与DBVERSION不一致，升级数据库
         if (version != DBVERSION){
             upgradeDB(database);

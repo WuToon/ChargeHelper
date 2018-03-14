@@ -192,26 +192,26 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
         if (s != null && !"".equals(s)){
             record.setProcessCardNumber(Integer.parseInt(s));
         }else {
-            CommonUtil.showMsgLong("请输入流程卡号");
+            CommonUtil.showMsg("请输入流程卡号");
             return;
         }
         s = qulifiedNumber.getText().toString();
         if (s != null && !"".equals(s)){
             record.setQulifiedNumber(Integer.parseInt(s));
         }else {
-            CommonUtil.showMsgLong("请输入合格产品个数");
+            CommonUtil.showMsg("请输入合格产品个数");
             return;
         }
         s = record.getModelName();
         if (s != null && !"".equals(s)) {
         }else {
-            CommonUtil.showMsgLong("型号名称加载失败，请稍后再试");
+            CommonUtil.showMsg("型号名称加载失败，请稍后再试");
             return;
         }
         Double p = record.getModelPrice();
         if (p != null && p != 0) {
         }else {
-            CommonUtil.showMsgLong("型号单价加载失败，请稍后再试");
+            CommonUtil.showMsg("型号单价加载失败，请稍后再试");
             return;
         }
         s = comment.getText().toString();
@@ -228,7 +228,7 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
         addDateTv.setText(new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime()));
         comment.setText("");
         //===============================
-        CommonUtil.showMsgShort("添加成功");
+        CommonUtil.showMsg("添加成功");
     }
 
     /**

@@ -146,7 +146,7 @@ public class ModelPriceDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (ModelPriceET.getText().toString() == null || ModelPriceET.getText().toString().equals("")){
-                    CommonUtil.showMsgLong("价格不可以为空");
+                    CommonUtil.showMsg("价格不可以为空");
                     return;
                 }else {
                     product.setModelPrice(Double.parseDouble(ModelPriceET.getText().toString()));
@@ -155,7 +155,7 @@ public class ModelPriceDialogFragment extends DialogFragment {
                     maps.get(position).put("price",product.getModelPrice() + " 元");
                     products.set(position,product);
                     adapter.notifyDataSetChanged();
-                    CommonUtil.showMsgShort("修改成功");
+                    CommonUtil.showMsg("修改成功");
                     productDialog.dismiss();
                 }
             }

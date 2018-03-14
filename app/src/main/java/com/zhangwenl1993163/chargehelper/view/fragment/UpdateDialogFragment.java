@@ -99,7 +99,7 @@ public class UpdateDialogFragment extends DialogFragment {
                         if (onRecordChanged != null)
                             onRecordChanged.onChanged(record);
                         dialog.dismiss();
-                        CommonUtil.showMsgShort("修改成功");
+                        CommonUtil.showMsg("修改成功");
                     }else
                         field.set(dialog,false);
                 } catch (Exception e) {
@@ -154,26 +154,26 @@ public class UpdateDialogFragment extends DialogFragment {
         if (s != null && !"".equals(s)){
             record.setProcessCardNumber(Integer.parseInt(s));
         }else {
-            CommonUtil.showMsgLong("请输入流程卡号");
+            CommonUtil.showMsg("请输入流程卡号");
             return false;
         }
         s = qulifiedNumber.getText().toString();
         if (s != null && !"".equals(s)){
             record.setQulifiedNumber(Integer.parseInt(s));
         }else {
-            CommonUtil.showMsgLong("请输入合格产品个数");
+            CommonUtil.showMsg("请输入合格产品个数");
             return false;
         }
         s = record.getModelName();
         if (s != null && !"".equals(s)) {
         }else {
-            CommonUtil.showMsgLong("型号名称加载失败，请稍后再试");
+            CommonUtil.showMsg("型号名称加载失败，请稍后再试");
             return false;
         }
         Double p = record.getModelPrice();
         if (p != null && p != 0) {
         }else {
-            CommonUtil.showMsgLong("型号单价加载失败，请稍后再试");
+            CommonUtil.showMsg("型号单价加载失败，请稍后再试");
             return false;
         }
         s = comment.getText().toString();

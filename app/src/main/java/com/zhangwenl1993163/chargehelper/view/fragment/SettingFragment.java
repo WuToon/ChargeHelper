@@ -66,7 +66,7 @@ public class SettingFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             Uri uri = data.getData();
-            CommonUtil.showMsgLong(data.getData().getPath());
+            CommonUtil.showMsg(data.getData().getPath());
         }
     }
 
@@ -141,13 +141,13 @@ public class SettingFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (modelNameET.getText().toString() == null || modelNameET.getText().toString().equals("")){
-                    CommonUtil.showMsgLong("型号不可以为空");
+                    CommonUtil.showMsg("型号不可以为空");
                     return;
                 }else if (ModelPriceET.getText().toString() == null || ModelPriceET.getText().toString().equals("")){
-                    CommonUtil.showMsgLong("单价不可以为空");
+                    CommonUtil.showMsg("单价不可以为空");
                     return;
                 }else if(productDao.getProductByName(modelNameET.getText().toString()).size() != 0){
-                    CommonUtil.showMsgLong("型号 " + modelNameET.getText().toString() + " 已存在");
+                    CommonUtil.showMsg("型号 " + modelNameET.getText().toString() + " 已存在");
                     return;
                 }else {
                     Product product = new Product();
@@ -156,7 +156,7 @@ public class SettingFragment extends Fragment {
                     product.setAddTimeStamp(System.currentTimeMillis());
                     product.setModifyTimeStamp(System.currentTimeMillis());
                     productDao.insertProduct(product);
-                    CommonUtil.showMsgShort("添加成功");
+                    CommonUtil.showMsg("添加成功");
                     productDialog.dismiss();
                 }
             }
