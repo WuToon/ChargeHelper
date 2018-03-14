@@ -196,9 +196,9 @@ public class CheckActivity extends AppCompatActivity {
             records = JsonUtil.json2MapList(tempJson);
             //刷新列表
             reflushList();
-            CommonUtil.showMsgShort("回退成功");
+            CommonUtil.showMsg("回退成功");
         } else {
-            CommonUtil.showMsgShort("临时变量为空，无法回退");
+            CommonUtil.showMsg("临时变量为空，无法回退");
         }
     }
 

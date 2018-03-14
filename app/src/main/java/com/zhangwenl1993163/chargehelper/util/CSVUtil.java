@@ -24,7 +24,7 @@ public class CSVUtil {
             csvWriter.writeAll(data);
             csvWriter.flush();
         } catch (IOException e) {
-            CommonUtil.showMsgShort("导出CSV失败");
+            CommonUtil.showMsg("导出CSV失败");
             flag = false;
             Log.e(TAG,"导出CSV失败:" + e.toString());
         }finally {
