@@ -1,6 +1,7 @@
 package com.zhangwenl1993163.chargehelper.view.fragment;
 
 import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
@@ -13,10 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.SimpleAdapter;
-import android.widget.Spinner;
 import android.widget.TextView;
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
@@ -30,7 +28,6 @@ import com.zhangwenl1993163.chargehelper.util.CommonUtil;
 import com.zhangwenl1993163.chargehelper.util.DateUtil;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -40,16 +37,13 @@ import java.util.Map;
  */
 
 public class HistoryFragment extends Fragment {
-    private Spinner queryYear,queryMonth,sortWay,sortTypeSpinner;
-    private TextView tip;
+    private TextView tip,searchTV,noDataTV;
     private SwipeMenuListView container;
-    private Calendar calendar = Calendar.getInstance();
-    private List<Integer> years;
-    private String sortColoumName = Constants.PROCESS_CARD_NUMBER;
-    private String sortType = Constants.ASC;
     private ChargeDao chargeDao;
     private List<Map<String,Object>> records;
     private SimpleAdapter adapter;
+    private Date date = new Date();
+    private String sortColoumName = Constants.ADD_DATE,sortType = Constants.DESC;
 
     @Nullable
     @Override
@@ -70,24 +64,32 @@ public class HistoryFragment extends Fragment {
     }
 
     private void init(){
-        calendar.setTime(new Date());
-        calendar.set(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),15);
         chargeDao = new ChargeDao(getView().getContext());
         tip = getView().findViewById(R.id.history_tips);
-        queryYear = getView().findViewById(R.id.query_year);
-        loadYears();
-        queryYear.setOnItemSelectedListener(yearListener);
-        queryMonth = getView().findViewById(R.id.query_months);
-        queryMonth.setSelection(calendar.get(Calendar.MONTH));
-        queryMonth.setOnItemSelectedListener(monthListemer);
-        sortWay = getView().findViewById(R.id.sort_item);
-        sortWay.setOnItemSelectedListener(sortListener);
-        sortTypeSpinner = getView().findViewById(R.id.sort_type);
-        sortTypeSpinner.setOnItemSelectedListener(sortTypeListener);
+        searchTV = getView().findViewById(R.id.history_search);
+        searchTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment search = new CheckSearchDialogFragment(onSelectedListener);
+                FragmentTransaction transaction = getActivity().getFragmentManager().beginTransaction();
+                search.show(transaction,"search");
+            }
+        });
+        noDataTV = getView().findViewById(R.id.history_no_data);
         container = getView().findViewById(R.id.history_container);
         container.setOnItemClickListener(listener);
         setSlideMenu();
     }
+
+    private CheckSearchDialogFragment.OnSelectedListener onSelectedListener = new CheckSearchDialogFragment.OnSelectedListener() {
+        @Override
+        public void onSelected(Date date, String sortItem, String sortType) {
+            HistoryFragment.this.date = date;
+            HistoryFragment.this.sortColoumName = sortItem;
+            HistoryFragment.this.sortType = sortType;
+            loadProductList();
+        }
+    };
 
     private AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
         @Override
@@ -116,7 +118,8 @@ public class HistoryFragment extends Fragment {
      * 加载产品列表
      * */
     private void loadProductList(){
-        records = query();
+        List<Long> l = DateUtil.getMonthRange(date.getTime());
+        records = chargeDao.getRecordMapInRange(l,sortColoumName,sortType);
         setTips(records);
         adapter = new SimpleAdapter(getView().getContext(),records,R.layout.record_list_item,
                 new String[]{"processCardNumber","modelName","qulifiedNumber","totalMoney"},
@@ -132,32 +135,11 @@ public class HistoryFragment extends Fragment {
         if (l != null && l.size() != 0){
             String s = "<-- 总计"+ l.size() +"条数据，点击查看详情，左滑弹出菜单 -->";
             tip.setText(s);
+            noDataTV.setVisibility(View.GONE);
         }else{
-            String s = "暂无数据，请更换查询条件";
-            tip.setText("<-- "+s+" -->");
+            tip.setText("<-- 暂无数据，请更换查询条件 -->");
+            noDataTV.setVisibility(View.VISIBLE);
         }
-    }
-
-    /**
-     * 查询数据库
-     * */
-    private List<Map<String,Object>> query(){
-        List<Long> l = DateUtil.getMonthRange(calendar.getTimeInMillis());
-        List<Map<String,Object>> records = chargeDao.getRecordMapInRange(l,sortColoumName,sortType);
-        return records;
-    }
-
-    /**
-     * 加载年份下拉列表
-     **/
-    private void loadYears(){
-        years = DateUtil.getLatest3Years();
-        List<String> b = new ArrayList<>();
-        for (int i : years){
-            b.add(i + " 年");
-        }
-        ArrayAdapter<String> c = new ArrayAdapter<String>(getView().getContext(),android.R.layout.simple_list_item_1,b);
-        queryYear.setAdapter(c);
     }
 
     /**
@@ -250,86 +232,6 @@ public class HistoryFragment extends Fragment {
         FragmentTransaction fm = getFragmentManager().beginTransaction();
         fragment.show(fm,"dialog");
     }
-
-    //监听器
-    private AdapterView.OnItemSelectedListener yearListener = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            calendar.set(years.get(position),calendar.get(Calendar.MONTH),15);
-            loadProductList();
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-
-        }
-    };
-
-    //监听器
-    private AdapterView.OnItemSelectedListener monthListemer = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            calendar.set(calendar.get(Calendar.YEAR),position,15);
-            loadProductList();
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-
-        }
-    };
-
-    //监听器
-    private AdapterView.OnItemSelectedListener sortListener = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            switch (position){
-                case 0:
-                    sortColoumName = Constants.PROCESS_CARD_NUMBER;
-                    loadProductList();
-                    break;
-                case 1:
-                    sortColoumName = Constants.MODEL_NAME;
-                    loadProductList();
-                    break;
-                case 2:
-                    sortColoumName = Constants.ADD_DATE;
-                    loadProductList();
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-
-        }
-    };
-
-    //监听器
-    private AdapterView.OnItemSelectedListener sortTypeListener = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            switch (position){
-                case 0:
-                    sortType = Constants.ASC;
-                    loadProductList();
-                    break;
-                case 1:
-                    sortType = Constants.DESC;
-                    loadProductList();
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-
-        }
-    };
 
     /**
      * 获取主题颜色

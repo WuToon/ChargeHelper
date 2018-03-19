@@ -56,7 +56,7 @@ public class AttendanceActivity extends AppCompatActivity {
         Intent intent = getIntent();
         attendanceType = intent.getIntExtra("attendanceType",-1);
         initUI();
-        loadDate(new Date(), Constants.ASC);
+        loadDate(new Date(), Constants.DESC);
     }
 
     private void initUI(){

@@ -41,7 +41,7 @@ import java.util.Map;
  */
 
 public class CheckActivity extends AppCompatActivity {
-    private TextView tips;
+    private TextView tips,noDataTV;
     private SwipeMenuListView swipeMenuListView;
     private ChargeDao chargeDao;
     private List<Map<String,Object>> records;
@@ -78,6 +78,7 @@ public class CheckActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.show();
         tips = findViewById(R.id.check_tips);
+        noDataTV = findViewById(R.id.check_no_data);
         swipeMenuListView = findViewById(R.id.check_container);
         swipeMenuListView.setMenuCreator(creator);
         swipeMenuListView.setOnItemClickListener(onItemClickListener);
@@ -275,8 +276,10 @@ public class CheckActivity extends AppCompatActivity {
         if (l != null && l.size() != 0){
             String s = "<-- 剩余"+ l.size() +"条数据，对账进度：" + schedule +"% -->";
             tips.setText(s);
+            noDataTV.setVisibility(View.GONE);
         }else{
             tips.setText("<-- 暂无数据，请更换查询条件 -->");
+            noDataTV.setVisibility(View.VISIBLE);
         }
     }
 

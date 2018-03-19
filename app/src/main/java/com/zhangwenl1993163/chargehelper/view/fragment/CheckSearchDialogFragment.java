@@ -7,7 +7,6 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -136,9 +135,9 @@ public class CheckSearchDialogFragment extends DialogFragment{
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0){
-                    sortType = Constants.ASC;
-                }else{
                     sortType = Constants.DESC;
+                }else{
+                    sortType = Constants.ASC;
                 }
             }
 

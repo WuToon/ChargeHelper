@@ -37,8 +37,8 @@
     </string-array>
 
     <string-array name="sort_type">
-        <item>升序</item>
         <item>降序</item>
+        <item>升序</item>
     </string-array>
 
     <string-array name="add_type">
