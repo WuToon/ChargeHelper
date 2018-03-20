@@ -37,7 +37,7 @@ import java.util.Map;
  */
 
 public class HistoryFragment extends Fragment {
-    private TextView tip,searchTV,noDataTV;
+    private TextView tip,searchTV,noDataTV,titleTV;
     private SwipeMenuListView container;
     private ChargeDao chargeDao;
     private List<Map<String,Object>> records;
@@ -76,6 +76,7 @@ public class HistoryFragment extends Fragment {
             }
         });
         noDataTV = getView().findViewById(R.id.history_no_data);
+        titleTV = getView().findViewById(R.id.history_title);
         container = getView().findViewById(R.id.history_container);
         container.setOnItemClickListener(listener);
         setSlideMenu();
@@ -126,6 +127,8 @@ public class HistoryFragment extends Fragment {
                 new int[]{R.id.item_process_card_number,R.id.item_module_name,
                 R.id.item_qulified_number,R.id.item_total_money});
         container.setAdapter(adapter);
+        //修改标题
+        setTitle();
     }
 
     /**
@@ -140,6 +143,14 @@ public class HistoryFragment extends Fragment {
             tip.setText("<-- 暂无数据，请更换查询条件 -->");
             noDataTV.setVisibility(View.VISIBLE);
         }
+    }
+
+    /**
+     * 设置title
+     */
+    private void setTitle(){
+        String title = "历史数据（"+new SimpleDateFormat("yyyy-MM").format(date)+"）";
+        titleTV.setText(title);
     }
 
     /**
