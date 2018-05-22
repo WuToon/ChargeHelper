@@ -56,7 +56,7 @@ public class ChargeDao {
         while (cursor.moveToNext()){
             Record r = new Record();
             r.setId(cursor.getInt(0));
-            r.setProcessCardNumber(cursor.getInt(1));
+            r.setProcessCardNumber(cursor.getString(1));
             r.setModelName(cursor.getString(2));
             r.setModelPrice(cursor.getDouble(3));
             r.setQulifiedNumber(cursor.getInt(4));
@@ -77,7 +77,7 @@ public class ChargeDao {
         while (cursor.moveToNext()){
             Record r = new Record();
             r.setId(cursor.getInt(0));
-            r.setProcessCardNumber(cursor.getInt(1));
+            r.setProcessCardNumber(cursor.getString(1));
             r.setModelName(cursor.getString(2));
             r.setModelPrice(cursor.getDouble(3));
             r.setQulifiedNumber(cursor.getInt(4));
@@ -98,7 +98,7 @@ public class ChargeDao {
         while (cursor.moveToNext()){
             Map<String,Object> m = new HashMap<>();
             m.put("id",cursor.getInt(0));
-            m.put("processCardNumber",cursor.getInt(1));
+            m.put("processCardNumber",cursor.getString(1));
             m.put("modelName",cursor.getString(2));
             m.put("modelPrice",cursor.getDouble(3));
             m.put("qulifiedNumber",cursor.getInt(4));

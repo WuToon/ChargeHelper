@@ -7,6 +7,7 @@ import android.util.Log;
 import com.zhangwenl1993163.chargehelper.model.Constants;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +19,7 @@ import java.io.OutputStream;
 
 public class DBUtil {
     private final static String TAG = DBUtil.class.getName();
-    private static final int DBVERSION = 1;
+    private static final int DBVERSION = 2;
 
     public static SQLiteDatabase getDBReadOnly(Context context){
         return getDB(context,false);
@@ -53,6 +54,29 @@ public class DBUtil {
         for (int i = db.getVersion() + 1 ; i <= DBVERSION ; i++){
             //历次版本数据库更新内容
             switch (i){
+                case 2:
+                    String rename = "ALTER TABLE charge_list RENAME TO charge_list_old;";
+                    String createNew = "CREATE TABLE charge_list" +
+                            "(" +
+                            "  id                  INTEGER        NOT NULL" +
+                            "    PRIMARY KEY," +
+                            "  process_card_number TEXT(255)      NOT NULL," +
+                            "  model_name          TEXT(255)      NOT NULL," +
+                            "  model_price         DECIMAL(10, 2) NOT NULL," +
+                            "  qulified_number     INTEGER        NOT NULL," +
+                            "  add_time            DECIMAL        NOT NULL," +
+                            "  modify_time         DECIMAL        NOT NULL," +
+                            "  comment             TEXT(255)      NOT NULL" +
+                            ");";
+                    String copy = "INSERT INTO charge_list (id, process_card_number, model_name, model_price, qulified_number, add_time, modify_time, comment)\n" +
+                            "  SELECT id,process_card_number,model_name,model_price,qulified_number,add_time,modify_time,comment FROM charge_list_old;";
+                    String dropOld = "DROP TABLE charge_list_old;";
+                    db.execSQL(rename);
+                    db.execSQL(createNew);
+                    db.execSQL(copy);
+                    db.execSQL(dropOld);
+                    Log.d(TAG,"数据库升级成功");
+                    break;
                 case 1:
                     //新增考勤表
                     String sql = "CREATE TABLE 'attendance_list' (" +
@@ -120,5 +144,41 @@ public class DBUtil {
             database.close();
             return true;
         }
+    }
+
+    public static boolean exportDB(String absPath){
+        boolean result;
+        InputStream is = null;
+        OutputStream os = null;
+        try {
+            is = new FileInputStream(Constants.DBPATH + Constants.DBNAME);
+            os = new FileOutputStream(absPath);
+            byte[] buf = new byte[1024];
+            int len = 0;
+            while ((len = is.read(buf)) > 0){
+                os.write(buf,0,len);
+            }
+            os.flush();
+            result = true;
+        } catch (IOException e) {
+            result = false;
+            e.printStackTrace();
+        }finally {
+            if (is != null){
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (os != null){
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return result;
     }
 }

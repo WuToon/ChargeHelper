@@ -269,7 +269,7 @@ public class ChargeFragment extends Fragment implements View.OnClickListener {
     private void insertRecord(){
         String s = processNumber.getText().toString();
         if (s != null && !"".equals(s)){
-            record.setProcessCardNumber(Integer.parseInt(s));
+            record.setProcessCardNumber(s);
         }else {
             CommonUtil.showMsg("请输入流程卡号");
             return;

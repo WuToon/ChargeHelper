@@ -133,7 +133,7 @@ public class UpdateDialogFragment extends DialogFragment {
         productDao = new ProductDao(getActivity());
         record = new Record();
         record.setId((Integer)m.get("id"));
-        record.setProcessCardNumber((Integer)m.get("processCardNumber"));
+        record.setProcessCardNumber((String) m.get("processCardNumber"));
         record.setModelName((String) m.get("modelName"));
         record.setModelPrice((double)m.get("modelPrice"));
         record.setQulifiedNumber((Integer)m.get("qulifiedNumber"));
@@ -152,7 +152,7 @@ public class UpdateDialogFragment extends DialogFragment {
     public boolean checkParams(){
         String s = cardNumber.getText().toString();
         if (s != null && !"".equals(s)){
-            record.setProcessCardNumber(Integer.parseInt(s));
+            record.setProcessCardNumber(s);
         }else {
             CommonUtil.showMsg("请输入流程卡号");
             return false;

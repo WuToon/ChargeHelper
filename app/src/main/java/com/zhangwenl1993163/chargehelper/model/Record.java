@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class Record {
     private Integer id;
-    private Integer processCardNumber;
+    private String processCardNumber;
     private String modelName;
     private Double modelPrice;
     private Integer qulifiedNumber;
@@ -23,11 +23,11 @@ public class Record {
         this.id = id;
     }
 
-    public Integer getProcessCardNumber() {
+    public String getProcessCardNumber() {
         return processCardNumber;
     }
 
-    public void setProcessCardNumber(Integer processCardNumber) {
+    public void setProcessCardNumber(String processCardNumber) {
         this.processCardNumber = processCardNumber;
     }
 

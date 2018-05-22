@@ -28,6 +28,7 @@ import com.zhangwenl1993163.chargehelper.model.Product;
 import com.zhangwenl1993163.chargehelper.model.Record;
 import com.zhangwenl1993163.chargehelper.util.CSVUtil;
 import com.zhangwenl1993163.chargehelper.util.CommonUtil;
+import com.zhangwenl1993163.chargehelper.util.DBUtil;
 import com.zhangwenl1993163.chargehelper.util.DateUtil;
 import com.zhangwenl1993163.chargehelper.view.activity.AttendanceActivity;
 import com.zhangwenl1993163.chargehelper.view.activity.CheckActivity;
@@ -177,13 +178,13 @@ public class SettingFragment extends Fragment {
     }
 
     private void showExportCSVDialog(){
-        String[] items = new String[]{"当月数据","所有数据"};
+        String[] items = new String[]{"当月数据","所有数据","数据库文件"};
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("导出数据");
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                exportCSV(which);
+                exportData(which);
             }
         });
         builder.show();
@@ -211,9 +212,29 @@ public class SettingFragment extends Fragment {
     }
 
     /**
-     * @param type 0为导出当月 1 导出历史所有所有
+     * @param type 0为导出当月 1 导出历史所有所有 2 数据库文件
      * */
-    private void exportCSV(int type){
+    private void exportData(int type){
+        final String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/ChargeHelper/";
+        if (type == 2){
+            String fileName = "数据库文件_" + System.currentTimeMillis() + ".db";
+            boolean result = DBUtil.exportDB(path + fileName);
+            if (result) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("导出成功");
+                builder.setMessage("数据库文件已经成功导出，文件路径：" + path + fileName);
+                builder.setPositiveButton("确定",null);
+                builder.show();
+            }else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("导出失败");
+                builder.setMessage("数据库文件导出失败，请联系开发者");
+                builder.setPositiveButton("确定",null);
+                builder.show();
+            }
+            return;
+        }
+
         List<Record> records = null;
         if (type == 0){
             records = chargeDao.getRecordInRange(DateUtil.getMonthRange(System.currentTimeMillis()));
@@ -221,7 +242,6 @@ public class SettingFragment extends Fragment {
             records = chargeDao.getAllRecord();
         }
         List<String[]> data = new ArrayList<>();
-        final String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/ChargeHelper/";
         if (!new File(path).exists()){
             new File(path).mkdir();
         }
@@ -252,20 +272,6 @@ public class SettingFragment extends Fragment {
             builder.setTitle("导出成功");
             builder.setMessage((type == 0 ? new SimpleDateFormat("yyyy年MM月").
                     format(System.currentTimeMillis()) : "历史所有") + "数据已经成功导出，文件路径：" + absPath);
-            //直接打开所在文件夹
-//            builder.setNegativeButton("取消",null);
-//            builder.setPositiveButton("打开目录", new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//                    Uri uri = FileProvider.getUriForFile(getActivity(),
-//                            "com.zhangwenl1993163.chargehelper.fileProvider",new File(absPath));
-//                    intent.setDataAndType(uri,"*/*");
-//                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-//                    startActivity(intent);
-//                }
-//            });
             builder.setPositiveButton("确定",null);
             builder.show();
         }
