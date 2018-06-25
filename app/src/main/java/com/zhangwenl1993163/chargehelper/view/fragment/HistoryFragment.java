@@ -210,7 +210,7 @@ public class HistoryFragment extends Fragment {
      * */
     private void delItem(final int position){
         final int id = (Integer)(records.get(position).get("id"));
-        final int cardNum = (Integer)(records.get(position).get("processCardNumber"));
+        final String cardNum = (String)records.get(position).get("processCardNumber");
         AlertDialog.Builder builder = new AlertDialog.Builder(getView().getContext());
         builder.setTitle("是否删除");
         builder.setMessage("即将删除流程卡号为"+ cardNum +"的记录，删除之后不可恢复，请谨慎操作！");
